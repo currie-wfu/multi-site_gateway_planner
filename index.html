@@ -1,0 +1,2642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MultiSite Gateway Cloning Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr 1fr;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        @media (max-width: 1200px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background: #fafafa;
+            border-radius: 6px;
+            padding: 20px;
+        }
+
+        .panel h2 {
+            color: #333;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .element-input {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .element-input h3 {
+            color: #555;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .element-input.element-5 h3 { color: #4A90E2; }
+        .element-input.element-middle h3 { color: #7ED321; }
+        .element-input.element-3 h3 { color: #F5A623; }
+        .element-input.element-dest h3 { color: #9C27B0; }
+
+        .pdonr-label {
+            font-size: 0.85em;
+            color: #888;
+            margin-bottom: 8px;
+            font-style: italic;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 80px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            resize: vertical;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .checkbox-container {
+            margin-top: 10px;
+        }
+
+        .checkbox-container label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .checkbox-container input[type="checkbox"] {
+            margin-right: 8px;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .sequence-info {
+            font-size: 0.85em;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .source-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            margin-left: 8px;
+        }
+
+        .source-badge.raw {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+
+        .source-badge.entry {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .source-badge.dest {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #5568d3;
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .error {
+            color: #d32f2f;
+            font-size: 0.85em;
+            margin-top: 5px;
+        }
+
+        .workflow-diagram {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-size: 0.85em;
+        }
+
+        .workflow-step {
+            padding: 8px;
+            margin: 5px 0;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+        }
+
+        .workflow-step.bp-reaction {
+            background: #fff3e0;
+            border-left: 3px solid #ff9800;
+        }
+
+        .workflow-step.lr-reaction {
+            background: #e8f5e9;
+            border-left: 3px solid #4caf50;
+        }
+
+        .workflow-arrow {
+            text-align: center;
+            color: #999;
+            font-size: 1.2em;
+            margin: 5px 0;
+        }
+
+        .sequence-display {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+            word-wrap: break-word;
+            word-break: break-all;
+            overflow-wrap: break-word;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .seq-backbone { background-color: #e1bee7; }
+        .seq-attb4 { background-color: #ffcdd2; }
+        .seq-5element { background-color: #bbdefb; }
+        .seq-attb1 { background-color: #f8bbd9; }
+        .seq-middle { background-color: #c8e6c9; }
+        .seq-attb2 { background-color: #ffe0b2; }
+        .seq-3element { background-color: #fff9c4; }
+        .seq-attb3 { background-color: #d1c4e9; }
+        .seq-frame { background-color: #b2dfdb; text-decoration: underline; }
+
+        .translation-display {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .translation-frame {
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #f9f9f9;
+            border-radius: 4px;
+        }
+
+        .frame-label {
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .protein-seq {
+            line-height: 1.8;
+            word-wrap: break-word;
+            word-break: break-all;
+            overflow-wrap: break-word;
+        }
+
+        .start-codon {
+            background-color: #c8e6c9;
+            font-weight: bold;
+        }
+
+        .stop-codon {
+            background-color: #ffcdd2;
+            font-weight: bold;
+        }
+
+        .aa-from-5 {
+            background-color: #bbdefb;
+        }
+
+        .aa-from-attb {
+            background-color: #ffcdd2;
+        }
+
+        .aa-from-middle {
+            background-color: #c8e6c9;
+        }
+
+        .aa-from-3 {
+            background-color: #fff9c4;
+        }
+
+        .aa-from-frame {
+            background-color: #b2dfdb;
+        }
+
+        .primer-list {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .primer-item {
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #f9f9f9;
+            border-left: 3px solid #667eea;
+        }
+
+        .primer-name {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .primer-seq {
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+            word-wrap: break-word;
+            margin: 5px 0;
+        }
+
+        .primer-attb {
+            color: #d32f2f;
+        }
+
+        .primer-gene {
+            color: #1976d2;
+        }
+
+        .primer-info {
+            font-size: 0.85em;
+            color: #666;
+        }
+
+        .primer-section {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px dashed #ddd;
+        }
+
+        .primer-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .primer-section-title {
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 10px;
+            padding: 5px;
+            background: #f0f0f0;
+            border-radius: 4px;
+        }
+
+        #vectorMap {
+            width: 100%;
+            max-width: 400px;
+            height: 400px;
+            margin: 0 auto;
+            display: block;
+        }
+
+        .export-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .export-buttons button {
+            width: 100%;
+        }
+
+        .stats {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .stat-item:last-child {
+            border-bottom: none;
+        }
+
+        .stat-label {
+            font-weight: 500;
+            color: #555;
+        }
+
+        .stat-value {
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .att-site-info {
+            background: #f0f4ff;
+            border: 1px solid #c5cae9;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 15px;
+            font-size: 0.85em;
+        }
+
+        .att-site-info h4 {
+            color: #3f51b5;
+            margin-bottom: 8px;
+        }
+
+        .att-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9em;
+        }
+
+        .att-table th, .att-table td {
+            padding: 6px 8px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .att-table th {
+            background: #e8eaf6;
+            font-weight: 600;
+        }
+
+        .att-table tr:last-child td {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>MultiSite Gateway Cloning Tool</h1>
+            <p>Design your multisite gateway cloning experiments with proper BP/LR recombination modeling</p>
+        </header>
+
+        <div class="main-content">
+            <!-- Left Panel: Inputs -->
+            <div class="panel">
+                <h2>Sequence Inputs</h2>
+
+                <div class="att-site-info">
+                    <h4>Gateway Cloning Workflow</h4>
+                    <p>Upload Entry clones or enter raw sequences. Raw sequences receive attB primers for BP reaction.
+                    The LR reaction combines Entry clones with pDEST to create the final Expression clone.</p>
+                </div>
+
+                <div class="element-input element-dest">
+                    <h3>Destination Vector (pDEST)</h3>
+                    <div class="pdonr-label">Upload pDEST vector with attR4 and attR3 sites</div>
+                    <div style="margin: 10px 0;">
+                        <input type="file" id="fileDest" accept=".gb,.gbk" style="display: none;">
+                        <button onclick="document.getElementById('fileDest').click()" type="button" style="width: 100%; padding: 8px;">Upload pDEST Vector (.gb)</button>
+                    </div>
+                    <div class="sequence-info" id="infoDest">No vector loaded</div>
+                    <div class="error" id="errorDest"></div>
+                </div>
+
+                <div class="element-input element-5">
+                    <h3>5' Element (Promoter)</h3>
+                    <div class="pdonr-label">pDONR P4-P1R Entry Clone (attL4-insert-attR1) or raw sequence</div>
+                    <textarea id="seq5" placeholder="Enter DNA sequence or upload Entry clone..."></textarea>
+                    <div style="margin: 10px 0;">
+                        <input type="file" id="file5" accept=".gb,.gbk" style="display: none;">
+                        <button onclick="document.getElementById('file5').click()" type="button" style="width: 100%; padding: 8px;">Upload Entry Clone (.gb)</button>
+                    </div>
+                    <div class="sequence-info" id="info5">Length: 0 bp <span id="source5"></span></div>
+                    <div class="error" id="error5"></div>
+                    <div class="checkbox-container">
+                        <label>
+                            <input type="checkbox" id="frame5">
+                            <span>Keep in frame with middle element</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="element-input element-middle">
+                    <h3>Middle Element (Gene of Interest)</h3>
+                    <div class="pdonr-label">pDONR 221 Entry Clone (attL1-insert-attL2) or raw sequence</div>
+                    <textarea id="seqMiddle" placeholder="Enter DNA sequence or upload Entry clone..."></textarea>
+                    <div style="margin: 10px 0;">
+                        <input type="file" id="fileMiddle" accept=".gb,.gbk" style="display: none;">
+                        <button onclick="document.getElementById('fileMiddle').click()" type="button" style="width: 100%; padding: 8px;">Upload Entry Clone (.gb)</button>
+                    </div>
+                    <div class="sequence-info" id="infoMiddle">Length: 0 bp <span id="sourceMiddle"></span></div>
+                    <div class="error" id="errorMiddle"></div>
+                </div>
+
+                <div class="element-input element-3">
+                    <h3>3' Element (Terminator/Tag)</h3>
+                    <div class="pdonr-label">pDONR P2R-P3 Entry Clone (attR2-insert-attL3) or raw sequence</div>
+                    <textarea id="seq3" placeholder="Enter DNA sequence or upload Entry clone..."></textarea>
+                    <div style="margin: 10px 0;">
+                        <input type="file" id="file3" accept=".gb,.gbk" style="display: none;">
+                        <button onclick="document.getElementById('file3').click()" type="button" style="width: 100%; padding: 8px;">Upload Entry Clone (.gb)</button>
+                    </div>
+                    <div class="sequence-info" id="info3">Length: 0 bp <span id="source3"></span></div>
+                    <div class="error" id="error3"></div>
+                    <div class="checkbox-container">
+                        <label>
+                            <input type="checkbox" id="frame3">
+                            <span>Keep in frame with middle element</span>
+                        </label>
+                    </div>
+                </div>
+
+                <button onclick="assembleSequences()" style="width: 100%; padding: 15px; font-size: 1.1em;">
+                    Generate Assembly & Primers
+                </button>
+            </div>
+
+            <!-- Center Panel: Visualization -->
+            <div class="panel">
+                <h2>Gateway Reaction Workflow</h2>
+                <div id="workflowDisplay" class="workflow-diagram">
+                    <p style="color: #999; text-align: center;">Enter sequences and click "Generate Assembly & Primers" to see the reaction workflow</p>
+                </div>
+
+                <h2>Expression Clone Sequence</h2>
+                <div id="assemblyDisplay" class="sequence-display">
+                    <p style="color: #999; text-align: center;">Final expression clone sequence will appear here</p>
+                </div>
+
+                <h2>Translation (Longest ORF from Middle Element)</h2>
+                <div id="translationDisplay" class="translation-display">
+                    <p style="color: #999; text-align: center;">Translation will appear here after assembly</p>
+                </div>
+
+                <h2>Statistics</h2>
+                <div id="statsDisplay" class="stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Total Assembly Size:</span>
+                        <span class="stat-value" id="statSize">0 bp</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">GC Content:</span>
+                        <span class="stat-value" id="statGC">0%</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Molecular Weight:</span>
+                        <span class="stat-value" id="statMW">0 Da</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel: Primers & Export -->
+            <div class="panel">
+                <h2>attB Site Reference</h2>
+                <div class="att-site-info">
+                    <table class="att-table">
+                        <tr><th>Site</th><th>Sequence (5'->3')</th></tr>
+                        <tr><td>attB4</td><td style="font-family: monospace; font-size: 0.8em;">GGGGACAACTTTGTATAGAAAAGTTG</td></tr>
+                        <tr><td>attB1r</td><td style="font-family: monospace; font-size: 0.8em;">GGGGACTGCTTTTTTGTACAAACTTG</td></tr>
+                        <tr><td>attB1</td><td style="font-family: monospace; font-size: 0.8em;">GGGGACAAGTTTGTACAAAAAAGCAGGCT</td></tr>
+                        <tr><td>attB2</td><td style="font-family: monospace; font-size: 0.8em;">GGGGACCACTTTGTACAAGAAAGCTGGGT</td></tr>
+                        <tr><td>attB2r</td><td style="font-family: monospace; font-size: 0.8em;">GGGGACAGCTTTCTTGTACAAAGTGG</td></tr>
+                        <tr><td>attB3</td><td style="font-family: monospace; font-size: 0.8em;">GGGGACAACTTTGTATAATAAAGTTG</td></tr>
+                    </table>
+                </div>
+
+                <h2>PCR Primers</h2>
+                <div id="primerDisplay" class="primer-list">
+                    <p style="color: #999; text-align: center;">Primers for BP reaction will be generated after assembly</p>
+                </div>
+
+                <h2>Vector Map</h2>
+                <svg id="vectorMap"></svg>
+
+                <h2>Export</h2>
+                <div class="export-buttons">
+                    <button onclick="exportFASTA()">Download FASTA</button>
+                    <button onclick="exportGenBank()">Download GenBank</button>
+                    <button onclick="exportPrimers()">Download Primers (CSV)</button>
+                    <button onclick="exportReport()">Download Report (TXT)</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables to store assembled data
+        let assembledData = null;
+
+        // Track sequence sources (raw input vs entry clone upload)
+        let sequenceSources = {
+            '5': 'raw',
+            'middle': 'raw',
+            '3': 'raw'
+        };
+
+        // Store pDEST backbone data
+        let destVectorData = null;
+
+        // attB sequences for PCR primers (from MultiSite Gateway manual page vi)
+        const attBPrimerSequences = {
+            attB4: 'GGGGACAACTTTGTATAGAAAAGTTG',
+            attB1r: 'GGGGACTGCTTTTTTGTACAAACTTG',
+            attB1: 'GGGGACAAGTTTGTACAAAAAAGCAGGCT',
+            attB2: 'GGGGACCACTTTGTACAAGAAAGCTGGGT',
+            attB2r: 'GGGGACAGCTTTCTTGTACAAAGTGG',
+            attB3: 'GGGGACAACTTTGTATAATAAAGTTG'
+        };
+
+        // Recombined attB sites in the final Expression clone after LR reaction
+        const attBRecombinedSequences = {
+            attB4: 'ACAACTTTGTATAGAAAAGTTG',
+            attB1: 'ACAAGTTTGTACAAAAAAGCAGGCT',
+            attB2: 'ACCACTTTGTACAAGAAAGCTGGGT',
+            attB3: 'ACAACTTTGTATAATAAAGTTG'
+        };
+
+        // Conserved sequences for att site detection
+        const attSiteMarkers = {
+            // attL sites (from BP reaction) - conserved core sequences
+            attL_core: 'CAAATAATGATTTTATTTTGACTGATAGTGACCTGTTCGTTGCAACAAATTGAT',
+            // attR sites - conserved core sequences
+            attR_core: 'ACCACTTTGTACAAGAAAGCTGAACGAGAAACGTAAAATGATATAAATATCAATATATTAAATTAGATTTTGCATAAAAAACAGACTACATAATACTGTAAAACACAACATAT',
+            // Specific site endings for identification
+            attL4_end: 'GTATAGAAAAGTTG',
+            attR1_end: 'CCAGTCA',
+            attL1_end: 'AAAGCAGGCT',
+            attL2_end: 'AAGCTGGGT',
+            attR2_end: 'GCAGTCA',
+            attL3_end: 'GTATAATAAAGTTG',
+            // pDEST attR sites
+            attR4_marker: 'CAACTTTGTATAGAAAAGTTG',
+            attR3_marker: 'CAACTTTGTATAATAAAGTTG'
+        };
+
+        // Codon table
+        const codonTable = {
+            'TTT': 'F', 'TTC': 'F', 'TTA': 'L', 'TTG': 'L',
+            'TCT': 'S', 'TCC': 'S', 'TCA': 'S', 'TCG': 'S',
+            'TAT': 'Y', 'TAC': 'Y', 'TAA': '*', 'TAG': '*',
+            'TGT': 'C', 'TGC': 'C', 'TGA': '*', 'TGG': 'W',
+            'CTT': 'L', 'CTC': 'L', 'CTA': 'L', 'CTG': 'L',
+            'CCT': 'P', 'CCC': 'P', 'CCA': 'P', 'CCG': 'P',
+            'CAT': 'H', 'CAC': 'H', 'CAA': 'Q', 'CAG': 'Q',
+            'CGT': 'R', 'CGC': 'R', 'CGA': 'R', 'CGG': 'R',
+            'ATT': 'I', 'ATC': 'I', 'ATA': 'I', 'ATG': 'M',
+            'ACT': 'T', 'ACC': 'T', 'ACA': 'T', 'ACG': 'T',
+            'AAT': 'N', 'AAC': 'N', 'AAA': 'K', 'AAG': 'K',
+            'AGT': 'S', 'AGC': 'S', 'AGA': 'R', 'AGG': 'R',
+            'GTT': 'V', 'GTC': 'V', 'GTA': 'V', 'GTG': 'V',
+            'GCT': 'A', 'GCC': 'A', 'GCA': 'A', 'GCG': 'A',
+            'GAT': 'D', 'GAC': 'D', 'GAA': 'E', 'GAG': 'E',
+            'GGT': 'G', 'GGC': 'G', 'GGA': 'G', 'GGG': 'G'
+        };
+
+        // Parse pDEST vector to extract backbone
+        // Verified from JDW_760_pDEST-Tol2-pA2_1.gb
+        function parseDestVector(fileContent) {
+            try {
+                // Extract sequence from ORIGIN section
+                const originMatch = fileContent.match(/ORIGIN\s+([\s\S]+?)\/\//);
+                if (!originMatch) {
+                    throw new Error('Could not find ORIGIN section in GenBank file');
+                }
+
+                const fullSequence = originMatch[1]
+                    .replace(/\d+/g, '')
+                    .replace(/\s+/g, '')
+                    .toUpperCase();
+
+                // Verified att site markers from actual pDEST vector:
+                // attR4 starts with: TCAACTTTGTATAGAAAAGTTG...
+                // attR3 ends with: ...CAACTTTATTATACATAGTTG
+
+                const attR4StartMarkers = [
+                    'TCAACTTTGTATAGAAAAGTTG',  // Start of attR4 - verified
+                    'CAACTTTGTATAGAAAAGTTG',
+                    'AACTTTGTATAGAAAAGTTG',
+                    'CTTTGTATAGAAAAGTTG'
+                ];
+
+                const attR3EndMarkers = [
+                    'CAACTTTATTATACATAGTTG',  // End of attR3 - verified
+                    'CAACTTTATTATACATAGT',
+                    'ACTTTATTATACATAGTTG',
+                    'CTTTATTATACATAGTTG'
+                ];
+
+                let attR4Start = null;
+                let attR3End = null;
+
+                // Strategy 1: Find by feature annotation
+                const attR4Patterns = [
+                    /(?:misc_feature|protein_bind|misc_recomb)\s+(?:complement\()?([\d]+)\.\.([\d]+)\)?[\s\S]*?\/label="?attR4"?/gi,
+                    /(?:misc_feature|protein_bind|misc_recomb)\s+(?:complement\()?([\d]+)\.\.([\d]+)\)?[\s\S]*?\/note="[^"]*attR4[^"]*"/gi
+                ];
+
+                for (const pattern of attR4Patterns) {
+                    let match;
+                    while ((match = pattern.exec(fileContent)) !== null) {
+                        attR4Start = parseInt(match[1]) - 1; // Start of attR4 (0-indexed)
+                        console.log(`Found attR4 annotation starting at: ${attR4Start}`);
+                    }
+                    if (attR4Start !== null) break;
+                }
+
+                const attR3Patterns = [
+                    /(?:misc_feature|protein_bind|misc_recomb)\s+(?:complement\()?([\d]+)\.\.([\d]+)\)?[\s\S]*?\/label="?attR3"?/gi,
+                    /(?:misc_feature|protein_bind|misc_recomb)\s+(?:complement\()?([\d]+)\.\.([\d]+)\)?[\s\S]*?\/note="[^"]*attR3[^"]*"/gi
+                ];
+
+                for (const pattern of attR3Patterns) {
+                    let match;
+                    while ((match = pattern.exec(fileContent)) !== null) {
+                        attR3End = parseInt(match[2]); // End of attR3 (1-indexed, use as 0-indexed for substring)
+                        console.log(`Found attR3 annotation ending at: ${attR3End}`);
+                    }
+                    if (attR3End !== null) break;
+                }
+
+                // Strategy 2: Search by sequence markers (more reliable)
+                let markerR4Start = null;
+                let markerR3End = null;
+
+                for (const marker of attR4StartMarkers) {
+                    const idx = fullSequence.indexOf(marker);
+                    if (idx !== -1) {
+                        markerR4Start = idx;  // backbone5 ends right before this
+                        console.log(`Found attR4 start marker "${marker}" at position ${idx}`);
+                        break;
+                    }
+                }
+
+                for (const marker of attR3EndMarkers) {
+                    // Search after attR4 to avoid finding wrong site
+                    const searchStart = markerR4Start !== null ? markerR4Start + 100 : 0;
+                    const idx = fullSequence.indexOf(marker, searchStart);
+                    if (idx !== -1) {
+                        markerR3End = idx + marker.length;  // backbone3 starts right after this
+                        console.log(`Found attR3 end marker "${marker}" at position ${idx}, backbone3 starts at ${markerR3End}`);
+                        break;
+                    }
+                }
+
+                // Prefer marker-based results (more reliable than annotations)
+                if (markerR4Start !== null && markerR3End !== null) {
+                    attR4Start = markerR4Start;
+                    attR3End = markerR3End;
+                    console.log(`Using marker-based boundaries: attR4 starts at ${attR4Start}, attR3 ends at ${attR3End}`);
+                }
+
+                if (attR4Start === null || attR3End === null) {
+                    throw new Error('Could not find attR4 and attR3 sites in pDEST vector. Please ensure your pDEST file contains the expected att site sequences.');
+                }
+
+                // Ensure correct ordering
+                if (attR4Start > attR3End) {
+                    throw new Error('attR4 appears after attR3 in the sequence - unexpected pDEST structure');
+                }
+
+                // Extract backbone (sequence outside attR4...attR3 region)
+                // backbone5 = everything BEFORE attR4 starts
+                // backbone3 = everything AFTER attR3 ends
+                const backbone5 = fullSequence.substring(0, attR4Start);
+                const backbone3 = fullSequence.substring(attR3End);
+
+                console.log(`pDEST backbone extracted: 5' = ${backbone5.length} bp, 3' = ${backbone3.length} bp`);
+                console.log(`Replaced region (ccdB cassette): ${attR3End - attR4Start} bp`);
+
+                // Parse features and separate into backbone5 and backbone3 features
+                const allFeatures = parseGenbankFeatures(fileContent);
+
+                // Features in backbone5 (before attR4)
+                const backbone5Features = allFeatures
+                    .filter(f => f.end <= attR4Start)
+                    .filter(f => {
+                        // Exclude att site annotations
+                        const label = (f.qualifiers.label || '').toLowerCase();
+                        return !label.includes('attr4') && !label.includes('attr3');
+                    })
+                    .map(f => ({
+                        ...f,
+                        source: 'dest_5prime'
+                    }));
+
+                // Features in backbone3 (after attR3)
+                const backbone3Features = allFeatures
+                    .filter(f => f.start > attR3End)
+                    .filter(f => {
+                        // Exclude att site annotations
+                        const label = (f.qualifiers.label || '').toLowerCase();
+                        return !label.includes('attr4') && !label.includes('attr3');
+                    })
+                    .map(f => ({
+                        ...f,
+                        // Adjust positions to be relative to backbone3 start
+                        originalStart: f.start,
+                        originalEnd: f.end,
+                        start: f.start - attR3End,
+                        end: f.end - attR3End,
+                        source: 'dest_3prime'
+                    }));
+
+                console.log(`Found ${backbone5Features.length} features in 5' backbone, ${backbone3Features.length} in 3' backbone`);
+
+                return {
+                    fullSequence: fullSequence,
+                    backbone5: backbone5,
+                    backbone3: backbone3,
+                    backbone5Features: backbone5Features,
+                    backbone3Features: backbone3Features,
+                    attR4Start: attR4Start,
+                    attR3End: attR3End,
+                    name: extractPlasmidName(fileContent)
+                };
+            } catch (error) {
+                throw new Error(`pDEST parsing error: ${error.message}`);
+            }
+        }
+
+        function extractPlasmidName(fileContent) {
+            const locusMatch = fileContent.match(/LOCUS\s+(\S+)/);
+            if (locusMatch) return locusMatch[1];
+            const defMatch = fileContent.match(/DEFINITION\s+(.+)/);
+            if (defMatch) return defMatch[1].trim();
+            return 'pDEST';
+        }
+
+        // Parse GenBank features from file content
+        function parseGenbankFeatures(fileContent) {
+            const features = [];
+
+            // Extract the FEATURES section
+            const featuresMatch = fileContent.match(/FEATURES\s+Location\/Qualifiers([\s\S]*?)(?=ORIGIN)/);
+            if (!featuresMatch) return features;
+
+            const featuresText = featuresMatch[1];
+
+            // Regular expression to match feature entries
+            // Features start with a feature key at column 6, followed by location
+            const featurePattern = /^\s{5}(\S+)\s+((?:complement\()?(?:join\()?[\d.<>,]+\)?)\s*$/gm;
+
+            let match;
+            let lastFeature = null;
+            let lastIndex = 0;
+
+            // Split into lines for processing
+            const lines = featuresText.split('\n');
+            let currentFeature = null;
+            let currentQualifiers = '';
+
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i];
+
+                // Check if this is a new feature line (key at position 5)
+                const featureMatch = line.match(/^\s{5}(\S+)\s+((?:complement\()?(?:join\()?[\d.<>,]+\)?)\s*$/);
+
+                if (featureMatch) {
+                    // Save previous feature
+                    if (currentFeature) {
+                        currentFeature.qualifiers = parseQualifiers(currentQualifiers);
+                        features.push(currentFeature);
+                    }
+
+                    // Start new feature
+                    const featureType = featureMatch[1];
+                    const locationStr = featureMatch[2];
+
+                    // Parse location
+                    const location = parseFeatureLocation(locationStr);
+
+                    currentFeature = {
+                        type: featureType,
+                        locationStr: locationStr,
+                        start: location.start,
+                        end: location.end,
+                        complement: location.complement,
+                        join: location.join,
+                        qualifiers: {}
+                    };
+                    currentQualifiers = '';
+                } else if (currentFeature && line.match(/^\s{21}/)) {
+                    // This is a qualifier line (indented 21 spaces)
+                    currentQualifiers += line.trim() + '\n';
+                }
+            }
+
+            // Don't forget the last feature
+            if (currentFeature) {
+                currentFeature.qualifiers = parseQualifiers(currentQualifiers);
+                features.push(currentFeature);
+            }
+
+            return features;
+        }
+
+        // Parse feature location string
+        function parseFeatureLocation(locationStr) {
+            let complement = false;
+            let join = false;
+            let start = 0;
+            let end = 0;
+
+            let workStr = locationStr;
+
+            // Check for complement
+            if (workStr.startsWith('complement(')) {
+                complement = true;
+                workStr = workStr.replace(/^complement\(/, '').replace(/\)$/, '');
+            }
+
+            // Check for join
+            if (workStr.startsWith('join(')) {
+                join = true;
+                workStr = workStr.replace(/^join\(/, '').replace(/\)$/, '');
+            }
+
+            // Parse the position(s)
+            // Handle simple case: start..end
+            const simpleMatch = workStr.match(/^<?(\d+)\.\.>?(\d+)$/);
+            if (simpleMatch) {
+                start = parseInt(simpleMatch[1]);
+                end = parseInt(simpleMatch[2]);
+            } else if (join) {
+                // For join, get the overall span
+                const positions = workStr.match(/(\d+)/g);
+                if (positions && positions.length >= 2) {
+                    start = parseInt(positions[0]);
+                    end = parseInt(positions[positions.length - 1]);
+                }
+            } else {
+                // Single position
+                const singleMatch = workStr.match(/(\d+)/);
+                if (singleMatch) {
+                    start = end = parseInt(singleMatch[1]);
+                }
+            }
+
+            return { start, end, complement, join };
+        }
+
+        // Parse qualifier lines
+        function parseQualifiers(qualifiersText) {
+            const qualifiers = {};
+            const lines = qualifiersText.split('\n');
+
+            let currentKey = null;
+            let currentValue = '';
+
+            for (const line of lines) {
+                if (!line.trim()) continue;
+
+                // Check for new qualifier
+                const qualMatch = line.match(/^\/(\w+)(?:=(.*))?$/);
+                if (qualMatch) {
+                    // Save previous qualifier
+                    if (currentKey) {
+                        qualifiers[currentKey] = currentValue.replace(/^"/, '').replace(/"$/, '');
+                    }
+
+                    currentKey = qualMatch[1];
+                    currentValue = qualMatch[2] || 'true';
+                } else if (currentKey) {
+                    // Continuation of previous qualifier value
+                    currentValue += line;
+                }
+            }
+
+            // Save last qualifier
+            if (currentKey) {
+                qualifiers[currentKey] = currentValue.replace(/^"/, '').replace(/"$/, '');
+            }
+
+            return qualifiers;
+        }
+
+        // Filter features to those within a specific region
+        function filterFeaturesInRegion(features, startPos, endPos) {
+            return features.filter(f => {
+                // Include if feature overlaps with the region
+                return f.start >= startPos && f.end <= endPos;
+            }).map(f => ({
+                ...f,
+                // Adjust positions relative to region start
+                relativeStart: f.start - startPos + 1,
+                relativeEnd: f.end - startPos + 1
+            }));
+        }
+
+        // Global storage for features from uploaded files
+        let entryFeatures = {
+            '5': [],
+            'middle': [],
+            '3': []
+        };
+        let destFeatures = [];
+
+        // Parse Entry clone to extract insert between attL and attR sites
+        function parseEntryClone(fileContent, elementType) {
+            try {
+                // Extract sequence from ORIGIN section
+                const originMatch = fileContent.match(/ORIGIN\s+([\s\S]+?)\/\//);
+                if (!originMatch) {
+                    throw new Error('Could not find ORIGIN section in GenBank file');
+                }
+
+                const fullSequence = originMatch[1]
+                    .replace(/\d+/g, '')
+                    .replace(/\s+/g, '')
+                    .toUpperCase();
+
+                // att site configurations for each Entry clone type
+                // Based on actual Entry clone sequences - these markers appear at insert boundaries
+                // Note: att sites may be annotated on complement strand but positions are still forward strand
+                const attConfig = {
+                    '5': {
+                        // pDONR P4-P1R: attL4-insert-attR1
+                        // Verified from JDW_404_p5E-UASE1b.gb
+                        startSite: 'attL4',
+                        endSite: 'attR1',
+                        // attL4 ends with attB4 core: CCAACTTTGTATAGAAAAGTTG
+                        // Insert starts immediately after
+                        startMarkers: [
+                            'CCAACTTTGTATAGAAAAGTTG',  // attB4 core - verified
+                            'AACTTTGTATAGAAAAGTTG',
+                            'CTTTGTATAGAAAAGTTG',
+                            'TTTGTATAGAAAAGTTG',
+                            'GTATAGAAAAGTTG'
+                        ],
+                        // attR1 starts with: CAAGTTTGTACAAAAAAGTTG...
+                        // Insert ends immediately before this
+                        endMarkers: [
+                            'CAAGTTTGTACAAAAAAGTTG',  // attR1 start - verified
+                            'AAGTTTGTACAAAAAAGTTG',
+                            'AGTTTGTACAAAAAAGTTG',
+                            'GTTTGTACAAAAAAGTTG',
+                            'TTTGTACAAAAAAGTTG'
+                        ]
+                    },
+                    'middle': {
+                        // pDONR 221: attL1-insert-attL2
+                        // Verified from JDW_681_pME-Sun1-2xsfGFP-6xMyc-pA.gb
+                        startSite: 'attL1',
+                        endSite: 'attL2',
+                        // attL1 ends with attB1 core: CCAACTTTGTACAAAAAAGCAGGCT
+                        // Insert starts immediately after
+                        startMarkers: [
+                            'CCAACTTTGTACAAAAAAGCAGGCT',  // attB1 core - verified
+                            'AACTTTGTACAAAAAAGCAGGCT',
+                            'CTTTGTACAAAAAAGCAGGCT',
+                            'TTTGTACAAAAAAGCAGGCT',
+                            'GTACAAAAAAGCAGGCT'
+                        ],
+                        // attL2 starts with: TCCCAGCTTTCTTGTACAAAGTTGGC...
+                        // Insert ends immediately before this
+                        endMarkers: [
+                            'TCCCAGCTTTCTTGTACAAAGTTGGC',  // attL2 start - verified
+                            'CCCAGCTTTCTTGTACAAAGTTGGC',
+                            'CCAGCTTTCTTGTACAAAGTTGGC',
+                            'CAGCTTTCTTGTACAAAGTTGGC',
+                            'AGCTTTCTTGTACAAAGTTGGC'
+                        ]
+                    },
+                    '3': {
+                        // pDONR P2R-P3: attR2-insert-attL3
+                        // Based on actual JDW_967 sequence analysis
+                        startSite: 'attR2',
+                        endSite: 'attL3',
+                        // attR2 ends with attB2r-derived sequence (GTTCAACTTTCTTGTACAAAGTGG)
+                        // Insert starts immediately after this sequence
+                        startMarkers: [
+                            'GTTCAACTTTCTTGTACAAAGTGG',  // attB2r core - verified from real Entry clone
+                            'CAACTTTCTTGTACAAAGTGG',
+                            'TTTCTTGTACAAAGTGG',
+                            'CTTGTACAAAGTGG',
+                            'TGTACAAAGTGG'
+                        ],
+                        // attL3 forward strand starts with ACAACTTTATTATACAAAGTTG...
+                        // Insert ends immediately before this sequence
+                        endMarkers: [
+                            'ACAACTTTATTATACAAAGTTG',  // Forward strand at attL3 start - verified
+                            'CAACTTTATTATACAAAGTTG',
+                            'ACTTTATTATACAAAGTTG',
+                            'TTTATTATACAAAGTTG',
+                            'TTATTATACAAAGTTG'
+                        ]
+                    }
+                };
+
+                const config = attConfig[elementType];
+                if (!config) {
+                    throw new Error('Invalid element type');
+                }
+
+                let insertStart = null, insertEnd = null;
+
+                // Strategy 1: Try to find by feature annotation
+                // Look for att site annotations with various patterns
+                const attPatterns = [
+                    // Direct label match
+                    new RegExp(`(?:misc_feature|protein_bind|regulatory|misc_recomb)\\s+(?:complement\\()?(\\d+)\\.\\.(\\d+)\\)?[\\s\\S]*?\\/label="?${config.startSite}"?`, 'gi'),
+                    // Label in note
+                    new RegExp(`(?:misc_feature|protein_bind|regulatory|misc_recomb)\\s+(?:complement\\()?(\\d+)\\.\\.(\\d+)\\)?[\\s\\S]*?\\/note="[^"]*${config.startSite}[^"]*"`, 'gi'),
+                    // att in label with site number
+                    new RegExp(`(?:misc_feature|protein_bind|regulatory|misc_recomb)\\s+(?:complement\\()?(\\d+)\\.\\.(\\d+)\\)?[\\s\\S]*?\\/label="?att[LR]?${elementType === 'middle' ? '1' : (elementType === '5' ? '4' : '2')}"?`, 'gi')
+                ];
+
+                for (const pattern of attPatterns) {
+                    let match;
+                    while ((match = pattern.exec(fileContent)) !== null) {
+                        insertStart = parseInt(match[2]); // End position of the att site
+                        console.log(`Found ${config.startSite} annotation: ends at ${insertStart}`);
+                    }
+                    if (insertStart !== null) break;
+                }
+
+                const endAttPatterns = [
+                    new RegExp(`(?:misc_feature|protein_bind|regulatory|misc_recomb)\\s+(?:complement\\()?(\\d+)\\.\\.(\\d+)\\)?[\\s\\S]*?\\/label="?${config.endSite}"?`, 'gi'),
+                    new RegExp(`(?:misc_feature|protein_bind|regulatory|misc_recomb)\\s+(?:complement\\()?(\\d+)\\.\\.(\\d+)\\)?[\\s\\S]*?\\/note="[^"]*${config.endSite}[^"]*"`, 'gi')
+                ];
+
+                for (const pattern of endAttPatterns) {
+                    let match;
+                    while ((match = pattern.exec(fileContent)) !== null) {
+                        insertEnd = parseInt(match[1]) - 1; // Start position of the att site (0-indexed)
+                        console.log(`Found ${config.endSite} annotation: starts at ${insertEnd}`);
+                    }
+                    if (insertEnd !== null) break;
+                }
+
+                // Strategy 2: Search by sequence markers (primary method for reliability)
+                // Always try sequence markers even if annotations found, to verify
+                let markerStart = null, markerEnd = null;
+
+                for (const marker of config.startMarkers) {
+                    const idx = fullSequence.indexOf(marker);
+                    if (idx !== -1) {
+                        markerStart = idx + marker.length;
+                        console.log(`Found start marker "${marker}" at ${idx}, insert starts at ${markerStart}`);
+                        break;
+                    }
+                }
+
+                for (const marker of config.endMarkers) {
+                    // Search from markerStart onwards if we have it
+                    const searchStart = markerStart !== null ? markerStart : 0;
+                    const idx = fullSequence.indexOf(marker, searchStart);
+                    if (idx !== -1 && idx > searchStart) {
+                        markerEnd = idx;
+                        console.log(`Found end marker "${marker}" at ${idx}`);
+                        break;
+                    }
+                }
+
+                // Prefer marker-based results if both found (more reliable than annotations)
+                if (markerStart !== null && markerEnd !== null && markerStart < markerEnd) {
+                    insertStart = markerStart;
+                    insertEnd = markerEnd;
+                    console.log(`Using marker-based boundaries: ${insertStart} to ${insertEnd}`);
+                } else if (insertStart === null) {
+                    insertStart = markerStart;
+                }
+
+                if (insertEnd === null) {
+                    insertEnd = markerEnd;
+                }
+
+                // Strategy 3: Look for CDS/gene annotations that represent the insert
+                if (insertStart === null || insertEnd === null || insertStart >= insertEnd) {
+                    console.log('Trying CDS/gene annotation strategy...');
+
+                    const featurePatterns = [
+                        /\bCDS\s+(\d+)\.\.(\d+)/gi,
+                        /\bgene\s+(\d+)\.\.(\d+)/gi,
+                        // Also try complement notation
+                        /\bCDS\s+complement\((\d+)\.\.(\d+)\)/gi,
+                        /\bgene\s+complement\((\d+)\.\.(\d+)\)/gi
+                    ];
+
+                    let bestStart = null, bestEnd = null;
+                    let bestLength = 0;
+
+                    for (const pattern of featurePatterns) {
+                        let match;
+                        while ((match = pattern.exec(fileContent)) !== null) {
+                            const fStart = parseInt(match[1]) - 1;
+                            const fEnd = parseInt(match[2]);
+                            const fLength = fEnd - fStart;
+
+                            // Look for features that are likely the insert
+                            // Not too small (>100bp), not the whole plasmid, and largest CDS
+                            if (fLength > 100 && fLength < fullSequence.length * 0.7 && fLength > bestLength) {
+                                bestStart = fStart;
+                                bestEnd = fEnd;
+                                bestLength = fLength;
+                            }
+                        }
+                    }
+
+                    if (bestStart !== null && bestEnd !== null) {
+                        insertStart = bestStart;
+                        insertEnd = bestEnd;
+                        console.log(`Using CDS feature: ${insertStart} to ${insertEnd}`);
+                    }
+                }
+
+                // Strategy 4: Search for common att core sequences
+                if (insertStart === null || insertEnd === null || insertStart >= insertEnd) {
+                    console.log('Trying att core sequence strategy...');
+
+                    // Common conserved sequences in att sites
+                    const attCores = {
+                        // These appear in both attL and attR sites
+                        attCore1: 'GTTCGTTGCAACAAATTGAT',  // Common in attL sites
+                        attCore2: 'TCAATTTGTTGCAACGAAC',  // Reverse of above
+                        // attB core sequences that appear in recombined sites
+                        attB1Core: 'GTACAAAAAAGCAGGCT',
+                        attB2Core: 'GTACAAGAAAGCTGGGT',
+                        attB4Core: 'GTATAGAAAAGTTG',
+                        attB3Core: 'GTATAATAAAGTTG'
+                    };
+
+                    // Try to find two att sites and extract between them
+                    const core1Idx = fullSequence.indexOf(attCores.attCore1);
+                    const core2Idx = fullSequence.lastIndexOf(attCores.attCore1);
+
+                    if (core1Idx !== -1 && core2Idx !== -1 && core1Idx !== core2Idx && core2Idx - core1Idx > 100) {
+                        // Found two att cores - insert is between them
+                        insertStart = core1Idx + attCores.attCore1.length + 20;
+                        insertEnd = core2Idx - 20;
+                        console.log(`Found two att cores, insert between ${insertStart} and ${insertEnd}`);
+                    }
+                }
+
+                // Final validation
+                if (insertStart === null || insertEnd === null || insertStart >= insertEnd) {
+                    // Ultimate fallback: assume insert is middle portion of plasmid
+                    console.warn(`Could not identify att sites in ${elementType} Entry clone - using fallback`);
+
+                    // Most Entry clones have the insert roughly in the middle third
+                    // Look for the longest stretch without common vector sequences
+                    insertStart = Math.floor(fullSequence.length * 0.2);
+                    insertEnd = Math.floor(fullSequence.length * 0.8);
+                }
+
+                // Ensure bounds are valid
+                insertStart = Math.max(0, insertStart);
+                insertEnd = Math.min(fullSequence.length, insertEnd);
+
+                if (insertStart >= insertEnd) {
+                    throw new Error(`Invalid insert boundaries: start=${insertStart}, end=${insertEnd}`);
+                }
+
+                const extractedSeq = fullSequence.substring(insertStart, insertEnd);
+                console.log(`Extracted ${elementType} insert: ${extractedSeq.length} bp from position ${insertStart} to ${insertEnd}`);
+
+                // Sanity check: warn if the extracted sequence seems too short or too long
+                if (extractedSeq.length < 50) {
+                    console.warn(`Warning: Extracted ${elementType} sequence is very short (${extractedSeq.length} bp)`);
+                }
+                if (extractedSeq.length > fullSequence.length * 0.9) {
+                    console.warn(`Warning: Extracted ${elementType} sequence is very long (${extractedSeq.length} bp) - may include vector backbone`);
+                }
+
+                // Parse and filter features within the insert region
+                const allFeatures = parseGenbankFeatures(fileContent);
+                const insertFeatures = allFeatures
+                    .filter(f => {
+                        // Include features that are fully within the insert region
+                        // Use 1-based positions from GenBank
+                        return f.start >= insertStart + 1 && f.end <= insertEnd;
+                    })
+                    .filter(f => {
+                        // Exclude att site annotations - we'll add our own attB sites
+                        const label = (f.qualifiers.label || '').toLowerCase();
+                        const note = (f.qualifiers.note || '').toLowerCase();
+                        return !label.includes('att') && !note.includes('recombination site');
+                    })
+                    .map(f => ({
+                        ...f,
+                        // Adjust positions to be relative to insert start (1-based)
+                        originalStart: f.start,
+                        originalEnd: f.end,
+                        start: f.start - insertStart,
+                        end: f.end - insertStart,
+                        source: elementType
+                    }));
+
+                console.log(`Found ${insertFeatures.length} features in ${elementType} insert`);
+
+                return {
+                    sequence: extractedSeq,
+                    features: insertFeatures,
+                    name: extractPlasmidName(fileContent)
+                };
+
+            } catch (error) {
+                throw new Error(`Entry clone parsing error: ${error.message}`);
+            }
+        }
+
+        // File upload handler for pDEST
+        document.getElementById('fileDest').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const content = e.target.result;
+                    destVectorData = parseDestVector(content);
+
+                    // Count features in backbone regions
+                    const backbone5FeatureCount = destVectorData.backbone5Features ? destVectorData.backbone5Features.length : 0;
+                    const backbone3FeatureCount = destVectorData.backbone3Features ? destVectorData.backbone3Features.length : 0;
+                    const totalFeatures = backbone5FeatureCount + backbone3FeatureCount;
+
+                    let featureInfo = '';
+                    if (totalFeatures > 0) {
+                        featureInfo = ` <span class="source-badge entry" style="background:#e8f5e9;color:#2e7d32;">${totalFeatures} annotations</span>`;
+                    }
+
+                    document.getElementById('infoDest').innerHTML =
+                        `<span class="source-badge dest">Loaded</span> ${destVectorData.name} (${destVectorData.fullSequence.length} bp total, backbone: ${destVectorData.backbone5.length + destVectorData.backbone3.length} bp)${featureInfo}`;
+                    document.getElementById('errorDest').textContent = '';
+
+                    event.target.value = '';
+                } catch (error) {
+                    document.getElementById('errorDest').textContent = error.message;
+                    destVectorData = null;
+                }
+            };
+            reader.readAsText(file);
+        });
+
+        // File upload handlers for Entry clones
+        function setupEntryUpload(fileInputId, textareaId, infoId, errorId, sourceId, elementType) {
+            document.getElementById(fileInputId).addEventListener('change', function(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const content = e.target.result;
+                        const result = parseEntryClone(content, elementType);
+
+                        // Handle both old (string) and new (object) return formats
+                        const sequence = typeof result === 'string' ? result : result.sequence;
+                        const features = typeof result === 'object' ? result.features : [];
+
+                        document.getElementById(textareaId).value = sequence;
+                        sequenceSources[elementType] = 'entry';
+                        updateSourceBadge(sourceId, 'entry');
+                        validateSequence(textareaId, infoId, errorId);
+
+                        // Store features for this element
+                        entryFeatures[elementType] = features;
+                        console.log(`Stored ${features.length} features for ${elementType} element`);
+
+                        // Update info to show feature count
+                        const infoEl = document.getElementById(infoId);
+                        if (infoEl && features.length > 0) {
+                            infoEl.innerHTML += ` <span class="source-badge entry" style="background:#e8f5e9;color:#2e7d32;">${features.length} annotations</span>`;
+                        }
+
+                        event.target.value = '';
+                    } catch (error) {
+                        document.getElementById(errorId).textContent = error.message;
+                    }
+                };
+                reader.readAsText(file);
+            });
+        }
+
+        function updateSourceBadge(sourceId, source) {
+            const badge = document.getElementById(sourceId);
+            if (!badge) return;
+            if (source === 'entry') {
+                badge.innerHTML = '<span class="source-badge entry">Entry Clone</span>';
+            } else if (source === 'raw') {
+                badge.innerHTML = '<span class="source-badge raw">Raw Sequence</span>';
+            } else {
+                badge.innerHTML = '';
+            }
+        }
+
+        // Add input event listeners
+        document.getElementById('seq5').addEventListener('input', function() {
+            sequenceSources['5'] = 'raw';
+            updateSourceBadge('source5', 'raw');
+            validateSequence('seq5', 'info5', 'error5');
+            // Clear stored features when manually editing
+            entryFeatures['5'] = [];
+        });
+        document.getElementById('seqMiddle').addEventListener('input', function() {
+            sequenceSources['middle'] = 'raw';
+            updateSourceBadge('sourceMiddle', 'raw');
+            validateSequence('seqMiddle', 'infoMiddle', 'errorMiddle');
+            // Clear stored features when manually editing
+            entryFeatures['middle'] = [];
+        });
+        document.getElementById('seq3').addEventListener('input', function() {
+            sequenceSources['3'] = 'raw';
+            updateSourceBadge('source3', 'raw');
+            validateSequence('seq3', 'info3', 'error3');
+            // Clear stored features when manually editing
+            entryFeatures['3'] = [];
+        });
+
+        // Setup file uploads
+        setupEntryUpload('file5', 'seq5', 'info5', 'error5', 'source5', '5');
+        setupEntryUpload('fileMiddle', 'seqMiddle', 'infoMiddle', 'errorMiddle', 'sourceMiddle', 'middle');
+        setupEntryUpload('file3', 'seq3', 'info3', 'error3', 'source3', '3');
+
+        function validateSequence(inputId, infoId, errorId) {
+            const seq = document.getElementById(inputId).value.toUpperCase().replace(/\s/g, '');
+            const info = document.getElementById(infoId);
+            const error = document.getElementById(errorId);
+
+            const invalidChars = seq.match(/[^ATGC]/g);
+            if (invalidChars && seq.length > 0) {
+                error.textContent = `Invalid characters: ${[...new Set(invalidChars)].join(', ')}`;
+            } else {
+                error.textContent = '';
+            }
+
+            // Get element type from inputId
+            let elementType = inputId === 'seq5' ? '5' : (inputId === 'seqMiddle' ? 'middle' : '3');
+            let sourceId = inputId === 'seq5' ? 'source5' : (inputId === 'seqMiddle' ? 'sourceMiddle' : 'source3');
+
+            let badgeHtml = '';
+            if (seq.length > 0 && sequenceSources[elementType]) {
+                const source = sequenceSources[elementType];
+                if (source === 'entry') {
+                    badgeHtml = '<span class="source-badge entry">Entry Clone</span>';
+                } else {
+                    badgeHtml = '<span class="source-badge raw">Raw Sequence</span>';
+                }
+            }
+
+            info.innerHTML = `Length: ${seq.length} bp ${badgeHtml}`;
+            return !invalidChars || seq.length === 0;
+        }
+
+        function reverseComplement(seq) {
+            const complement = {'A': 'T', 'T': 'A', 'G': 'C', 'C': 'G'};
+            return seq.split('').reverse().map(b => complement[b] || b).join('');
+        }
+
+        function calculateTm(seq) {
+            const counts = {A: 0, T: 0, G: 0, C: 0};
+            for (let base of seq) {
+                if (counts.hasOwnProperty(base)) counts[base]++;
+            }
+            const total = counts.A + counts.T + counts.G + counts.C;
+            if (total === 0) return 0;
+
+            if (total < 14) {
+                return 2 * (counts.A + counts.T) + 4 * (counts.G + counts.C);
+            } else {
+                return Math.round(64.9 + 41 * (counts.G + counts.C - 16.4) / total);
+            }
+        }
+
+        function translate(seq, frame = 0) {
+            let protein = '';
+            let codons = [];
+            let positions = [];
+
+            for (let i = frame; i < seq.length - 2; i += 3) {
+                const codon = seq.substring(i, i + 3);
+                if (codon.length === 3) {
+                    codons.push(codon);
+                    positions.push(i);
+                    protein += codonTable[codon] || 'X';
+                }
+            }
+
+            return {protein, codons, positions};
+        }
+
+        function findLongestORF(seq) {
+            let bestORF = { start: 0, end: 0, length: 0, frame: 0, protein: '' };
+
+            for (let frame = 0; frame < 3; frame++) {
+                const {protein, positions} = translate(seq, frame);
+
+                // Find all ORFs (M to *)
+                let orfStart = -1;
+                for (let i = 0; i < protein.length; i++) {
+                    if (protein[i] === 'M' && orfStart === -1) {
+                        orfStart = i;
+                    } else if (protein[i] === '*' && orfStart !== -1) {
+                        const orfLength = i - orfStart;
+                        if (orfLength > bestORF.length) {
+                            bestORF = {
+                                start: positions[orfStart],
+                                end: positions[i] + 3,
+                                length: orfLength,
+                                frame: frame,
+                                protein: protein.substring(orfStart, i + 1),
+                                aaStart: orfStart,
+                                aaEnd: i
+                            };
+                        }
+                        orfStart = -1;
+                    }
+                }
+                // Check for ORF that runs to end without stop
+                if (orfStart !== -1) {
+                    const orfLength = protein.length - orfStart;
+                    if (orfLength > bestORF.length) {
+                        bestORF = {
+                            start: positions[orfStart],
+                            end: seq.length,
+                            length: orfLength,
+                            frame: frame,
+                            protein: protein.substring(orfStart),
+                            aaStart: orfStart,
+                            aaEnd: protein.length
+                        };
+                    }
+                }
+            }
+
+            return bestORF;
+        }
+
+        function calculateFrameAdjustment(precedingLength, targetFrame) {
+            // Calculate nucleotides needed to align to target frame
+            const currentFrame = precedingLength % 3;
+            const needed = (targetFrame - currentFrame + 3) % 3;
+            return needed;
+        }
+
+        function assembleSequences() {
+            // Get sequences
+            const seq5 = document.getElementById('seq5').value.toUpperCase().replace(/\s/g, '');
+            const seqMiddle = document.getElementById('seqMiddle').value.toUpperCase().replace(/\s/g, '');
+            const seq3 = document.getElementById('seq3').value.toUpperCase().replace(/\s/g, '');
+
+            // Get frame preferences
+            const frame5 = document.getElementById('frame5').checked;
+            const frame3 = document.getElementById('frame3').checked;
+
+            // Validate all sequences
+            if (!seq5 || !seqMiddle || !seq3) {
+                alert('Please enter all three sequences');
+                return;
+            }
+
+            if (!validateSequence('seq5', 'info5', 'error5') ||
+                !validateSequence('seqMiddle', 'infoMiddle', 'errorMiddle') ||
+                !validateSequence('seq3', 'info3', 'error3')) {
+                alert('Please fix sequence errors before assembling');
+                return;
+            }
+
+            // Find the longest ORF in the middle element
+            const middleORF = findLongestORF(seqMiddle);
+            const targetFrame = middleORF.length > 0 ? middleORF.frame : 0;
+
+            // If no ORF found, use default frame 0
+            if (middleORF.length === 0) {
+                console.warn('No ORF found in middle element, using frame 0');
+                middleORF.start = 0;
+            }
+
+            // Calculate frame adjustment nucleotides
+            let frame5nt = '';
+            let frame3nt = '';
+
+            if (frame5) {
+                // Calculate position after attB4 + 5' element + attB1
+                const posAfterAttB1 = attBRecombinedSequences.attB4.length +
+                                      seq5.length +
+                                      attBRecombinedSequences.attB1.length;
+
+                // We need the middle element's ORF to start in frame
+                // So we add nucleotides after attB1 if needed
+                const needed = calculateFrameAdjustment(posAfterAttB1, targetFrame);
+                if (needed > 0) {
+                    // Add G nucleotides for frame adjustment (neutral codon-wise)
+                    frame5nt = 'G'.repeat(needed);
+                }
+            }
+
+            if (frame3) {
+                // Find longest ORF in 3' element
+                const threeORF = findLongestORF(seq3);
+
+                // To put the 3' element's ORF in frame with the middle element's ORF,
+                // we need the number of nucleotides between the START of the middle ORF
+                // and the START of the 3' ORF to be divisible by 3.
+                //
+                // Nucleotides from middle ORF start to 3' ORF start:
+                // = (seqMiddle.length - middleORF.start) + attB2.length + frame3nt.length + threeORF.start
+                //
+                // We want this total % 3 == 0, so:
+                // frame3nt.length = (3 - ((seqMiddle.length - middleORF.start + attB2.length + threeORF.start) % 3)) % 3
+
+                const ntsFromMiddleORFToAttB2End = (seqMiddle.length - middleORF.start) +
+                                                    attBRecombinedSequences.attB2.length;
+                const ntsTo3ORFStart = ntsFromMiddleORFToAttB2End + threeORF.start;
+
+                const needed = (3 - (ntsTo3ORFStart % 3)) % 3;
+                if (needed > 0) {
+                    // Add G nucleotides for frame adjustment
+                    frame3nt = 'G'.repeat(needed);
+                }
+            }
+
+            // Build the insert sequence (between pDEST attR sites)
+            const insertSequence =
+                attBRecombinedSequences.attB4 +
+                seq5 +
+                attBRecombinedSequences.attB1 +
+                (frame5 ? frame5nt : '') +
+                seqMiddle +
+                attBRecombinedSequences.attB2 +
+                (frame3 ? frame3nt : '') +
+                seq3 +
+                attBRecombinedSequences.attB3;
+
+            // Build full expression clone with backbone if available
+            let fullSequence;
+            let backbone5 = '';
+            let backbone3 = '';
+
+            if (destVectorData) {
+                backbone5 = destVectorData.backbone5;
+                backbone3 = destVectorData.backbone3;
+                fullSequence = backbone5 + insertSequence + backbone3;
+            } else {
+                fullSequence = insertSequence;
+            }
+
+            // Generate primers for BP reactions (only for raw sequences)
+            const primers = generatePrimers(seq5, seqMiddle, seq3, frame5nt, frame3nt, frame5, frame3);
+
+            // Calculate feature positions in the final assembly
+            const assembledFeatures = [];
+            let currentPos = 1; // 1-based position
+
+            // Track positions for each region
+            const positions = {
+                backbone5Start: 0,
+                backbone5End: 0,
+                attB4Start: 0,
+                attB4End: 0,
+                seq5Start: 0,
+                seq5End: 0,
+                attB1Start: 0,
+                attB1End: 0,
+                frame5ntStart: 0,
+                frame5ntEnd: 0,
+                seqMiddleStart: 0,
+                seqMiddleEnd: 0,
+                attB2Start: 0,
+                attB2End: 0,
+                frame3ntStart: 0,
+                frame3ntEnd: 0,
+                seq3Start: 0,
+                seq3End: 0,
+                attB3Start: 0,
+                attB3End: 0,
+                backbone3Start: 0,
+                backbone3End: 0
+            };
+
+            // Calculate positions based on assembly order
+            if (destVectorData && backbone5.length > 0) {
+                positions.backbone5Start = currentPos;
+                positions.backbone5End = currentPos + backbone5.length - 1;
+                currentPos += backbone5.length;
+
+                // Add backbone5 features with adjusted positions
+                if (destVectorData.backbone5Features) {
+                    destVectorData.backbone5Features.forEach(f => {
+                        assembledFeatures.push({
+                            ...f,
+                            start: positions.backbone5Start + f.start - 1,
+                            end: positions.backbone5Start + f.end - 1
+                        });
+                    });
+                }
+            }
+
+            // attB4
+            positions.attB4Start = currentPos;
+            positions.attB4End = currentPos + attBRecombinedSequences.attB4.length - 1;
+            currentPos += attBRecombinedSequences.attB4.length;
+
+            // 5' element
+            positions.seq5Start = currentPos;
+            positions.seq5End = currentPos + seq5.length - 1;
+            currentPos += seq5.length;
+
+            // Add 5' element features
+            if (entryFeatures['5'] && entryFeatures['5'].length > 0) {
+                entryFeatures['5'].forEach(f => {
+                    assembledFeatures.push({
+                        ...f,
+                        start: positions.seq5Start + f.start - 1,
+                        end: positions.seq5Start + f.end - 1
+                    });
+                });
+            }
+
+            // attB1 + frame adjustment
+            positions.attB1Start = currentPos;
+            const attB1TotalLen = attBRecombinedSequences.attB1.length + (frame5 ? frame5nt.length : 0);
+            positions.attB1End = currentPos + attB1TotalLen - 1;
+            currentPos += attB1TotalLen;
+
+            // Middle element
+            positions.seqMiddleStart = currentPos;
+            positions.seqMiddleEnd = currentPos + seqMiddle.length - 1;
+            currentPos += seqMiddle.length;
+
+            // Add middle element features
+            if (entryFeatures['middle'] && entryFeatures['middle'].length > 0) {
+                entryFeatures['middle'].forEach(f => {
+                    assembledFeatures.push({
+                        ...f,
+                        start: positions.seqMiddleStart + f.start - 1,
+                        end: positions.seqMiddleStart + f.end - 1
+                    });
+                });
+            }
+
+            // attB2 + frame adjustment
+            positions.attB2Start = currentPos;
+            const attB2TotalLen = attBRecombinedSequences.attB2.length + (frame3 ? frame3nt.length : 0);
+            positions.attB2End = currentPos + attB2TotalLen - 1;
+            currentPos += attB2TotalLen;
+
+            // 3' element
+            positions.seq3Start = currentPos;
+            positions.seq3End = currentPos + seq3.length - 1;
+            currentPos += seq3.length;
+
+            // Add 3' element features
+            if (entryFeatures['3'] && entryFeatures['3'].length > 0) {
+                entryFeatures['3'].forEach(f => {
+                    assembledFeatures.push({
+                        ...f,
+                        start: positions.seq3Start + f.start - 1,
+                        end: positions.seq3Start + f.end - 1
+                    });
+                });
+            }
+
+            // attB3
+            positions.attB3Start = currentPos;
+            positions.attB3End = currentPos + attBRecombinedSequences.attB3.length - 1;
+            currentPos += attBRecombinedSequences.attB3.length;
+
+            // Backbone3
+            if (destVectorData && backbone3.length > 0) {
+                positions.backbone3Start = currentPos;
+                positions.backbone3End = currentPos + backbone3.length - 1;
+
+                // Add backbone3 features with adjusted positions
+                if (destVectorData.backbone3Features) {
+                    destVectorData.backbone3Features.forEach(f => {
+                        assembledFeatures.push({
+                            ...f,
+                            start: positions.backbone3Start + f.start - 1,
+                            end: positions.backbone3Start + f.end - 1
+                        });
+                    });
+                }
+            }
+
+            console.log(`Assembled ${assembledFeatures.length} features into final construct`);
+
+            // Store assembled data
+            assembledData = {
+                fullSequence,
+                insertSequence,
+                backbone5,
+                backbone3,
+                seq5,
+                seqMiddle,
+                seq3,
+                frame5,
+                frame3,
+                frame5nt,
+                frame3nt,
+                primers,
+                sources: {...sequenceSources},
+                middleORF,
+                hasBackbone: !!destVectorData,
+                destName: destVectorData ? destVectorData.name : null,
+                positions,
+                features: assembledFeatures
+            };
+
+            // Display results
+            displayWorkflow();
+            displayAssembly();
+            displayTranslation();
+            displayPrimers();
+            displayStats();
+            drawVectorMap();
+        }
+
+        function generatePrimers(seq5, seqMiddle, seq3, frame5nt, frame3nt, useFrame5, useFrame3) {
+            const primerBindingLength = 18;
+            const primers = [];
+
+            // 5' Element primers
+            if (sequenceSources['5'] === 'raw') {
+                const geneSpecific5F = seq5.substring(0, Math.min(primerBindingLength, seq5.length));
+                primers.push({
+                    name: "5' Element Forward (attB4)",
+                    attb: attBPrimerSequences.attB4,
+                    frame: '',
+                    geneSpecific: geneSpecific5F,
+                    fullSequence: attBPrimerSequences.attB4 + geneSpecific5F,
+                    tm: calculateTm(geneSpecific5F),
+                    description: "For BP reaction with pDONR P4-P1R",
+                    pdonr: "pDONR P4-P1R"
+                });
+
+                const geneSpecific5R = reverseComplement(seq5.substring(Math.max(0, seq5.length - primerBindingLength)));
+                primers.push({
+                    name: "5' Element Reverse (attB1r)",
+                    attb: attBPrimerSequences.attB1r,
+                    frame: '',
+                    geneSpecific: geneSpecific5R,
+                    fullSequence: attBPrimerSequences.attB1r + geneSpecific5R,
+                    tm: calculateTm(geneSpecific5R),
+                    description: "For BP reaction with pDONR P4-P1R",
+                    pdonr: "pDONR P4-P1R"
+                });
+            }
+
+            // Middle Element primers
+            if (sequenceSources['middle'] === 'raw') {
+                const frameNt = useFrame5 ? frame5nt : '';
+                const geneSpecificMF = seqMiddle.substring(0, Math.min(primerBindingLength, seqMiddle.length));
+                primers.push({
+                    name: "Middle Element Forward (attB1)",
+                    attb: attBPrimerSequences.attB1,
+                    frame: frameNt,
+                    geneSpecific: geneSpecificMF,
+                    fullSequence: attBPrimerSequences.attB1 + frameNt + geneSpecificMF,
+                    tm: calculateTm(geneSpecificMF),
+                    description: "For BP reaction with pDONR 221" + (frameNt ? ` (includes ${frameNt.length} nt frame adjustment)` : ''),
+                    pdonr: "pDONR 221"
+                });
+
+                const geneSpecificMR = reverseComplement(seqMiddle.substring(Math.max(0, seqMiddle.length - primerBindingLength)));
+                primers.push({
+                    name: "Middle Element Reverse (attB2)",
+                    attb: attBPrimerSequences.attB2,
+                    frame: '',
+                    geneSpecific: geneSpecificMR,
+                    fullSequence: attBPrimerSequences.attB2 + geneSpecificMR,
+                    tm: calculateTm(geneSpecificMR),
+                    description: "For BP reaction with pDONR 221",
+                    pdonr: "pDONR 221"
+                });
+            }
+
+            // 3' Element primers
+            if (sequenceSources['3'] === 'raw') {
+                const frameNt = useFrame3 ? frame3nt : '';
+                const geneSpecific3F = seq3.substring(0, Math.min(primerBindingLength, seq3.length));
+                primers.push({
+                    name: "3' Element Forward (attB2r)",
+                    attb: attBPrimerSequences.attB2r,
+                    frame: frameNt,
+                    geneSpecific: geneSpecific3F,
+                    fullSequence: attBPrimerSequences.attB2r + frameNt + geneSpecific3F,
+                    tm: calculateTm(geneSpecific3F),
+                    description: "For BP reaction with pDONR P2R-P3" + (frameNt ? ` (includes ${frameNt.length} nt frame adjustment)` : ''),
+                    pdonr: "pDONR P2R-P3"
+                });
+
+                const geneSpecific3R = reverseComplement(seq3.substring(Math.max(0, seq3.length - primerBindingLength)));
+                primers.push({
+                    name: "3' Element Reverse (attB3)",
+                    attb: attBPrimerSequences.attB3,
+                    frame: '',
+                    geneSpecific: geneSpecific3R,
+                    fullSequence: attBPrimerSequences.attB3 + geneSpecific3R,
+                    tm: calculateTm(geneSpecific3R),
+                    description: "For BP reaction with pDONR P2R-P3",
+                    pdonr: "pDONR P2R-P3"
+                });
+            }
+
+            return primers;
+        }
+
+        function displayWorkflow() {
+            const display = document.getElementById('workflowDisplay');
+            const data = assembledData;
+
+            let html = '<div style="font-size: 0.9em;">';
+
+            html += '<div style="margin-bottom: 15px;">';
+            html += '<strong>Step 1: BP Reactions (create Entry clones)</strong>';
+
+            // 5' element
+            if (data.sources['5'] === 'raw') {
+                html += '<div class="workflow-step bp-reaction">';
+                html += `<span style="color: #4A90E2; font-weight: bold;">5' Element:</span>&nbsp;`;
+                html += `attB4-PCR product-attB1r + pDONR P4-P1R → Entry clone`;
+                html += '</div>';
+            } else {
+                html += '<div class="workflow-step" style="background: #e3f2fd; border-left: 3px solid #2196f3;">';
+                html += `<span style="color: #4A90E2; font-weight: bold;">5' Element:</span>&nbsp;Using uploaded Entry clone`;
+                html += '</div>';
+            }
+
+            // Middle element
+            if (data.sources['middle'] === 'raw') {
+                html += '<div class="workflow-step bp-reaction">';
+                html += `<span style="color: #7ED321; font-weight: bold;">Middle Element:</span>&nbsp;`;
+                html += `attB1-PCR product-attB2 + pDONR 221 → Entry clone`;
+                html += '</div>';
+            } else {
+                html += '<div class="workflow-step" style="background: #e8f5e9; border-left: 3px solid #4caf50;">';
+                html += `<span style="color: #7ED321; font-weight: bold;">Middle Element:</span>&nbsp;Using uploaded Entry clone`;
+                html += '</div>';
+            }
+
+            // 3' element
+            if (data.sources['3'] === 'raw') {
+                html += '<div class="workflow-step bp-reaction">';
+                html += `<span style="color: #F5A623; font-weight: bold;">3' Element:</span>&nbsp;`;
+                html += `attB2r-PCR product-attB3 + pDONR P2R-P3 → Entry clone`;
+                html += '</div>';
+            } else {
+                html += '<div class="workflow-step" style="background: #fff3e0; border-left: 3px solid #ff9800;">';
+                html += `<span style="color: #F5A623; font-weight: bold;">3' Element:</span>&nbsp;Using uploaded Entry clone`;
+                html += '</div>';
+            }
+
+            html += '</div>';
+
+            html += '<div class="workflow-arrow">↓</div>';
+
+            html += '<div style="margin-bottom: 15px;">';
+            html += '<strong>Step 2: LR Reaction (create Expression clone)</strong>';
+            html += '<div class="workflow-step lr-reaction">';
+            if (data.hasBackbone) {
+                html += `3 Entry clones + ${data.destName} → Expression clone`;
+            } else {
+                html += `3 Entry clones + pDEST → Expression clone (no backbone loaded)`;
+            }
+            html += '</div>';
+            html += '</div>';
+
+            html += '<div class="workflow-arrow">↓</div>';
+
+            html += '<div>';
+            html += '<strong>Final Expression Clone Structure:</strong>';
+            html += '<div style="margin-top: 8px; padding: 10px; background: #f5f5f5; border-radius: 4px; font-family: monospace; font-size: 0.85em;">';
+            if (data.hasBackbone) {
+                html += '<span style="background: #e1bee7; padding: 2px 4px;">5\' backbone</span>';
+            }
+            html += '<span style="background: #ffcdd2; padding: 2px 4px;">attB4</span>';
+            html += '<span style="background: #bbdefb; padding: 2px 4px;">5\' element</span>';
+            html += '<span style="background: #f8bbd9; padding: 2px 4px;">attB1</span>';
+            if (data.frame5 && data.frame5nt) {
+                html += '<span style="background: #b2dfdb; padding: 2px 4px;">+' + data.frame5nt.length + 'nt</span>';
+            }
+            html += '<span style="background: #c8e6c9; padding: 2px 4px;">Middle</span>';
+            html += '<span style="background: #ffe0b2; padding: 2px 4px;">attB2</span>';
+            if (data.frame3 && data.frame3nt) {
+                html += '<span style="background: #b2dfdb; padding: 2px 4px;">+' + data.frame3nt.length + 'nt</span>';
+            }
+            html += '<span style="background: #fff9c4; padding: 2px 4px;">3\' element</span>';
+            html += '<span style="background: #d1c4e9; padding: 2px 4px;">attB3</span>';
+            if (data.hasBackbone) {
+                html += '<span style="background: #e1bee7; padding: 2px 4px;">3\' backbone</span>';
+            }
+            html += '</div>';
+            html += '</div>';
+
+            html += '</div>';
+            display.innerHTML = html;
+        }
+
+        function displayAssembly() {
+            const display = document.getElementById('assemblyDisplay');
+            const data = assembledData;
+
+            let html = '<div style="line-height: 1.8;">';
+
+            // Display with color coding
+            if (data.hasBackbone && data.backbone5) {
+                const bb5Display = data.backbone5.length > 50 ?
+                    data.backbone5.substring(0, 25) + '...[' + (data.backbone5.length - 50) + ' bp]...' + data.backbone5.substring(data.backbone5.length - 25) :
+                    data.backbone5;
+                html += `<span class="seq-backbone">${bb5Display}</span>`;
+            }
+
+            html += `<span class="seq-attb4">${attBRecombinedSequences.attB4}</span>`;
+            html += `<span class="seq-5element">${data.seq5}</span>`;
+            html += `<span class="seq-attb1">${attBRecombinedSequences.attB1}</span>`;
+            if (data.frame5 && data.frame5nt) {
+                html += `<span class="seq-frame" title="Frame adjustment">${data.frame5nt}</span>`;
+            }
+            html += `<span class="seq-middle">${data.seqMiddle}</span>`;
+            html += `<span class="seq-attb2">${attBRecombinedSequences.attB2}</span>`;
+            if (data.frame3 && data.frame3nt) {
+                html += `<span class="seq-frame" title="Frame adjustment">${data.frame3nt}</span>`;
+            }
+            html += `<span class="seq-3element">${data.seq3}</span>`;
+            html += `<span class="seq-attb3">${attBRecombinedSequences.attB3}</span>`;
+
+            if (data.hasBackbone && data.backbone3) {
+                const bb3Display = data.backbone3.length > 50 ?
+                    data.backbone3.substring(0, 25) + '...[' + (data.backbone3.length - 50) + ' bp]...' + data.backbone3.substring(data.backbone3.length - 25) :
+                    data.backbone3;
+                html += `<span class="seq-backbone">${bb3Display}</span>`;
+            }
+
+            html += '</div>';
+
+            html += '<div style="margin-top: 15px; padding: 10px; background: #f0f0f0; border-radius: 4px; font-size: 0.85em;">';
+            html += '<strong>Legend:</strong><br>';
+            if (data.hasBackbone) {
+                html += '<span class="seq-backbone" style="padding: 2px 5px; margin: 2px;">Backbone</span>';
+            }
+            html += '<span class="seq-attb4" style="padding: 2px 5px; margin: 2px;">attB4</span>';
+            html += '<span class="seq-5element" style="padding: 2px 5px; margin: 2px;">5\' element</span>';
+            html += '<span class="seq-attb1" style="padding: 2px 5px; margin: 2px;">attB1</span>';
+            html += '<span class="seq-middle" style="padding: 2px 5px; margin: 2px;">Middle</span>';
+            html += '<span class="seq-attb2" style="padding: 2px 5px; margin: 2px;">attB2</span>';
+            html += '<span class="seq-3element" style="padding: 2px 5px; margin: 2px;">3\' element</span>';
+            html += '<span class="seq-attb3" style="padding: 2px 5px; margin: 2px;">attB3</span>';
+            if (data.frame5nt || data.frame3nt) {
+                html += '<br><span class="seq-frame" style="padding: 2px 5px; margin: 2px;">Frame adjustment</span>';
+            }
+            html += '</div>';
+
+            display.innerHTML = html;
+        }
+
+        function displayTranslation() {
+            const display = document.getElementById('translationDisplay');
+            const data = assembledData;
+
+            // Calculate the position of middle element in the insert
+            const middleStart = attBRecombinedSequences.attB4.length +
+                               data.seq5.length +
+                               attBRecombinedSequences.attB1.length +
+                               (data.frame5 ? data.frame5nt.length : 0);
+
+            // Use the full insert sequence for translation (not including backbone)
+            const insertSeq = data.insertSequence;
+
+            // Find the longest ORF that starts in the middle element
+            const middleEnd = middleStart + data.seqMiddle.length;
+
+            let bestORF = null;
+
+            for (let frame = 0; frame < 3; frame++) {
+                const {protein, codons, positions} = translate(insertSeq, frame);
+
+                let orfStart = -1;
+                for (let i = 0; i < protein.length; i++) {
+                    const dnaPos = positions[i];
+
+                    if (protein[i] === 'M' && orfStart === -1) {
+                        // Only start ORF if it begins in the middle element
+                        if (dnaPos >= middleStart && dnaPos < middleEnd) {
+                            orfStart = i;
+                        }
+                    } else if (protein[i] === '*' && orfStart !== -1) {
+                        const orfLength = i - orfStart;
+                        if (!bestORF || orfLength > bestORF.length) {
+                            bestORF = {
+                                start: orfStart,
+                                end: i,
+                                length: orfLength,
+                                frame: frame,
+                                protein: protein.substring(orfStart, i + 1),
+                                positions: positions.slice(orfStart, i + 1),
+                                codons: codons.slice(orfStart, i + 1)
+                            };
+                        }
+                        orfStart = -1;
+                    }
+                }
+                // Check for ORF running to end
+                if (orfStart !== -1) {
+                    const orfLength = protein.length - orfStart;
+                    if (!bestORF || orfLength > bestORF.length) {
+                        bestORF = {
+                            start: orfStart,
+                            end: protein.length,
+                            length: orfLength,
+                            frame: frame,
+                            protein: protein.substring(orfStart),
+                            positions: positions.slice(orfStart),
+                            codons: codons.slice(orfStart)
+                        };
+                    }
+                }
+            }
+
+            if (!bestORF) {
+                display.innerHTML = '<p style="color: #999; text-align: center;">No ORF found starting in middle element</p>';
+                return;
+            }
+
+            // Calculate boundaries for coloring
+            const attB1End = attBRecombinedSequences.attB4.length + data.seq5.length + attBRecombinedSequences.attB1.length;
+            const frame5End = attB1End + (data.frame5 ? data.frame5nt.length : 0);
+            const attB2Start = frame5End + data.seqMiddle.length;
+            const attB2End = attB2Start + attBRecombinedSequences.attB2.length;
+            const frame3End = attB2End + (data.frame3 ? data.frame3nt.length : 0);
+            const seq3End = frame3End + data.seq3.length;
+
+            function getRegion(pos) {
+                if (pos < attBRecombinedSequences.attB4.length) return 'attB';
+                if (pos < attBRecombinedSequences.attB4.length + data.seq5.length) return '5';
+                if (pos < attB1End) return 'attB';
+                if (pos < frame5End) return 'frame';
+                if (pos < attB2Start) return 'middle';
+                if (pos < attB2End) return 'attB';
+                if (pos < frame3End) return 'frame';
+                if (pos < seq3End) return '3';
+                return 'attB';
+            }
+
+            let html = `<div class="frame-label">Longest ORF Starting in Middle Element (Frame ${bestORF.frame + 1}, ${bestORF.length} aa)</div>`;
+            html += '<div class="protein-seq">';
+
+            for (let i = 0; i < bestORF.protein.length; i++) {
+                const aa = bestORF.protein[i];
+                const codon = bestORF.codons[i];
+                const dnaPos = bestORF.positions[i];
+                const region = getRegion(dnaPos);
+
+                let aaClass = '';
+                switch (region) {
+                    case '5': aaClass = 'aa-from-5'; break;
+                    case 'middle': aaClass = 'aa-from-middle'; break;
+                    case '3': aaClass = 'aa-from-3'; break;
+                    case 'frame': aaClass = 'aa-from-frame'; break;
+                    default: aaClass = 'aa-from-attb'; break;
+                }
+
+                let extraClass = '';
+                if (i === 0) extraClass = ' start-codon';
+                else if (aa === '*') extraClass = ' stop-codon';
+
+                html += `<span class="${aaClass}${extraClass}" title="${codon} @ ${dnaPos} (${region})">${aa}</span>`;
+            }
+
+            html += '</div>';
+            html += '<div style="margin-top: 10px; font-size: 0.85em; color: #666;">';
+            html += `<strong>ORF length:</strong> ${bestORF.protein.replace(/\*/g, '').length} amino acids (excluding stop)<br>`;
+            html += '<strong>Legend:</strong> ';
+            html += '<span class="aa-from-5" style="padding: 2px 5px; margin: 0 3px;">5\' element</span>';
+            html += '<span class="aa-from-middle" style="padding: 2px 5px; margin: 0 3px;">Middle</span>';
+            html += '<span class="aa-from-3" style="padding: 2px 5px; margin: 0 3px;">3\' element</span>';
+            html += '<span class="aa-from-attb" style="padding: 2px 5px; margin: 0 3px;">attB sites</span>';
+            html += '<span class="aa-from-frame" style="padding: 2px 5px; margin: 0 3px;">Frame adj.</span><br>';
+            html += '<span class="start-codon" style="padding: 2px 5px;">M</span> Start ';
+            html += '<span class="stop-codon" style="padding: 2px 5px;">*</span> Stop';
+            html += '</div>';
+
+            display.innerHTML = html;
+        }
+
+        function displayPrimers() {
+            const display = document.getElementById('primerDisplay');
+            const primers = assembledData.primers;
+
+            if (primers.length === 0) {
+                display.innerHTML = '<p style="color: #999; text-align: center;">All sequences are from Entry clones - no PCR primers needed</p>';
+                return;
+            }
+
+            let html = '';
+
+            const primersByPdonr = {};
+            primers.forEach(primer => {
+                if (!primersByPdonr[primer.pdonr]) {
+                    primersByPdonr[primer.pdonr] = [];
+                }
+                primersByPdonr[primer.pdonr].push(primer);
+            });
+
+            for (const pdonr in primersByPdonr) {
+                html += '<div class="primer-section">';
+                html += `<div class="primer-section-title">${pdonr}</div>`;
+
+                primersByPdonr[pdonr].forEach(primer => {
+                    html += '<div class="primer-item">';
+                    html += `<div class="primer-name">${primer.name}</div>`;
+                    html += '<div class="primer-seq">';
+                    html += `<span class="primer-attb">${primer.attb}</span>`;
+                    if (primer.frame) {
+                        html += `<span style="color: #00897b; font-weight: bold;" title="Frame adjustment">${primer.frame}</span>`;
+                    }
+                    html += `<span class="primer-gene">${primer.geneSpecific}</span>`;
+                    html += '</div>';
+                    html += `<div class="primer-info">Total: ${primer.fullSequence.length} bp | Gene Tm: ~${primer.tm}°C</div>`;
+                    html += `<div class="primer-info" style="font-style: italic;">${primer.description}</div>`;
+                    html += '</div>';
+                });
+
+                html += '</div>';
+            }
+
+            html += '<div style="margin-top: 15px; padding: 10px; background: #fff3e0; border-radius: 4px; font-size: 0.85em;">';
+            html += '<strong>Legend:</strong> ';
+            html += '<span class="primer-attb">attB site</span> | ';
+            html += '<span style="color: #00897b; font-weight: bold;">Frame adj.</span> | ';
+            html += '<span class="primer-gene">Gene-specific</span>';
+            html += '</div>';
+
+            display.innerHTML = html;
+        }
+
+        function displayStats() {
+            const seq = assembledData.fullSequence;
+
+            const gc = (seq.match(/[GC]/g) || []).length;
+            const gcPercent = ((gc / seq.length) * 100).toFixed(1);
+
+            const mw = (seq.match(/A/g) || []).length * 313.2 +
+                       (seq.match(/T/g) || []).length * 304.2 +
+                       (seq.match(/G/g) || []).length * 329.2 +
+                       (seq.match(/C/g) || []).length * 289.2;
+
+            document.getElementById('statSize').textContent = `${seq.length} bp`;
+            document.getElementById('statGC').textContent = `${gcPercent}%`;
+            document.getElementById('statMW').textContent = `${Math.round(mw).toLocaleString()} Da`;
+        }
+
+        function drawVectorMap() {
+            const svg = document.getElementById('vectorMap');
+            const size = 400;
+            const center = size / 2;
+            const radius = 150;
+
+            svg.setAttribute('width', size);
+            svg.setAttribute('height', size);
+            svg.setAttribute('viewBox', `0 0 ${size} ${size}`);
+            svg.innerHTML = '';
+
+            const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            circle.setAttribute('cx', center);
+            circle.setAttribute('cy', center);
+            circle.setAttribute('r', radius);
+            circle.setAttribute('fill', 'none');
+            circle.setAttribute('stroke', '#999');
+            circle.setAttribute('stroke-width', '2');
+            svg.appendChild(circle);
+
+            const data = assembledData;
+            const totalLength = data.fullSequence.length;
+            let currentAngle = -90;
+
+            const features = [];
+
+            if (data.hasBackbone && data.backbone5.length > 0) {
+                features.push({name: "5' backbone", length: data.backbone5.length, color: '#9C27B0'});
+            }
+            features.push({name: 'attB4', length: attBRecombinedSequences.attB4.length, color: '#D0021B'});
+            features.push({name: "5' element", length: data.seq5.length, color: '#4A90E2'});
+            features.push({name: 'attB1', length: attBRecombinedSequences.attB1.length + (data.frame5 ? data.frame5nt.length : 0), color: '#E91E63'});
+            features.push({name: 'Middle', length: data.seqMiddle.length, color: '#7ED321'});
+            features.push({name: 'attB2', length: attBRecombinedSequences.attB2.length + (data.frame3 ? data.frame3nt.length : 0), color: '#FF9800'});
+            features.push({name: "3' element", length: data.seq3.length, color: '#FFEB3B'});
+            features.push({name: 'attB3', length: attBRecombinedSequences.attB3.length, color: '#673AB7'});
+            if (data.hasBackbone && data.backbone3.length > 0) {
+                features.push({name: "3' backbone", length: data.backbone3.length, color: '#9C27B0'});
+            }
+
+            features.forEach((feature) => {
+                const arcAngle = (feature.length / totalLength) * 360;
+                const endAngle = currentAngle + arcAngle;
+
+                const largeArcFlag = arcAngle > 180 ? 1 : 0;
+                const startX = center + radius * Math.cos(currentAngle * Math.PI / 180);
+                const startY = center + radius * Math.sin(currentAngle * Math.PI / 180);
+                const endX = center + radius * Math.cos(endAngle * Math.PI / 180);
+                const endY = center + radius * Math.sin(endAngle * Math.PI / 180);
+
+                const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                const d = `M ${startX} ${startY} A ${radius} ${radius} 0 ${largeArcFlag} 1 ${endX} ${endY}`;
+                path.setAttribute('d', d);
+                path.setAttribute('fill', 'none');
+                path.setAttribute('stroke', feature.color);
+                path.setAttribute('stroke-width', '20');
+                svg.appendChild(path);
+
+                if (arcAngle > 12) {
+                    const labelAngle = currentAngle + arcAngle / 2;
+                    const labelRadius = radius + 35;
+                    const labelX = center + labelRadius * Math.cos(labelAngle * Math.PI / 180);
+                    const labelY = center + labelRadius * Math.sin(labelAngle * Math.PI / 180);
+
+                    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                    text.setAttribute('x', labelX);
+                    text.setAttribute('y', labelY);
+                    text.setAttribute('text-anchor', 'middle');
+                    text.setAttribute('font-size', '10');
+                    text.setAttribute('fill', '#333');
+                    text.textContent = feature.name;
+                    svg.appendChild(text);
+                }
+
+                currentAngle = endAngle;
+            });
+
+            const centerText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            centerText.setAttribute('x', center);
+            centerText.setAttribute('y', center - 10);
+            centerText.setAttribute('text-anchor', 'middle');
+            centerText.setAttribute('font-size', '12');
+            centerText.setAttribute('font-weight', 'bold');
+            centerText.setAttribute('fill', '#333');
+            centerText.textContent = data.destName || 'Expression Clone';
+            svg.appendChild(centerText);
+
+            const sizeText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            sizeText.setAttribute('x', center);
+            sizeText.setAttribute('y', center + 10);
+            sizeText.setAttribute('text-anchor', 'middle');
+            sizeText.setAttribute('font-size', '11');
+            sizeText.setAttribute('fill', '#666');
+            sizeText.textContent = `${totalLength} bp`;
+            svg.appendChild(sizeText);
+        }
+
+        function exportFASTA() {
+            if (!assembledData) {
+                alert('Please generate assembly first');
+                return;
+            }
+
+            let fasta = '';
+            fasta += `>5_prime_element\n${assembledData.seq5}\n\n`;
+            fasta += `>Middle_element\n${assembledData.seqMiddle}\n\n`;
+            fasta += `>3_prime_element\n${assembledData.seq3}\n\n`;
+            fasta += `>Expression_Clone\n${assembledData.fullSequence}\n\n`;
+
+            assembledData.primers.forEach((primer, i) => {
+                fasta += `>Primer_${i + 1}_${primer.name.replace(/\s+/g, '_').replace(/[()]/g, '')}\n${primer.fullSequence}\n\n`;
+            });
+
+            downloadFile('multisite_gateway_assembly.fasta', fasta);
+        }
+
+        function exportGenBank() {
+            if (!assembledData) {
+                alert('Please generate assembly first');
+                return;
+            }
+
+            const data = assembledData;
+            const today = new Date();
+            const dateStr = today.toISOString().split('T')[0].replace(/-/g, '');
+            const vectorName = data.destName || 'Expression_Clone';
+
+            let gb = `LOCUS       ${vectorName.substring(0, 16).padEnd(16)} ${data.fullSequence.length} bp    DNA     circular     ${dateStr}\n`;
+            gb += `DEFINITION  MultiSite Gateway Expression Clone\n`;
+            gb += `ACCESSION   .\n`;
+            gb += `VERSION     .\n`;
+            gb += `SOURCE      synthetic DNA construct\n`;
+            gb += `  ORGANISM  synthetic DNA construct\n`;
+            gb += `FEATURES             Location/Qualifiers\n`;
+
+            // Helper function to format a feature for GenBank
+            function formatFeature(type, start, end, qualifiers, complement = false) {
+                let location = `${start}..${end}`;
+                if (complement) {
+                    location = `complement(${location})`;
+                }
+
+                let feature = `     ${type.padEnd(16)}${location}\n`;
+
+                // Add qualifiers
+                for (const [key, value] of Object.entries(qualifiers)) {
+                    if (value && value !== 'true') {
+                        // Handle multi-line values
+                        const valueStr = String(value);
+                        if (valueStr.length > 58) {
+                            // Split long values across multiple lines
+                            let remaining = valueStr;
+                            let first = true;
+                            while (remaining.length > 0) {
+                                const chunk = remaining.substring(0, first ? 58 : 58);
+                                remaining = remaining.substring(first ? 58 : 58);
+                                if (first) {
+                                    feature += `                     /${key}="${chunk}`;
+                                    first = false;
+                                } else {
+                                    feature += chunk;
+                                }
+                                if (remaining.length === 0) {
+                                    feature += `"\n`;
+                                }
+                            }
+                        } else {
+                            feature += `                     /${key}="${valueStr}"\n`;
+                        }
+                    } else if (value === 'true') {
+                        feature += `                     /${key}\n`;
+                    }
+                }
+
+                return feature;
+            }
+
+            // Use positions from assembled data
+            const pos = data.positions || {};
+
+            // Add backbone5 region if present
+            if (data.hasBackbone && data.backbone5.length > 0 && pos.backbone5Start) {
+                gb += formatFeature('misc_feature', pos.backbone5Start, pos.backbone5End, {
+                    label: '5_prime_backbone',
+                    note: 'pDEST vector backbone (5 prime)'
+                });
+            }
+
+            // Add attB4 site
+            if (pos.attB4Start && pos.attB4End) {
+                gb += formatFeature('protein_bind', pos.attB4Start, pos.attB4End, {
+                    label: 'attB4',
+                    note: 'Gateway recombination site'
+                });
+            }
+
+            // Add 5' element region
+            if (pos.seq5Start && pos.seq5End) {
+                gb += formatFeature('misc_feature', pos.seq5Start, pos.seq5End, {
+                    label: '5_prime_element',
+                    note: "5' element insert (promoter/regulatory)"
+                });
+            }
+
+            // Add attB1 site
+            if (pos.attB1Start && pos.attB1End) {
+                gb += formatFeature('protein_bind', pos.attB1Start, pos.attB1End, {
+                    label: 'attB1',
+                    note: 'Gateway recombination site'
+                });
+            }
+
+            // Add middle element region
+            if (pos.seqMiddleStart && pos.seqMiddleEnd) {
+                gb += formatFeature('misc_feature', pos.seqMiddleStart, pos.seqMiddleEnd, {
+                    label: 'middle_element',
+                    note: 'Middle element insert (gene of interest)'
+                });
+            }
+
+            // Add attB2 site
+            if (pos.attB2Start && pos.attB2End) {
+                gb += formatFeature('protein_bind', pos.attB2Start, pos.attB2End, {
+                    label: 'attB2',
+                    note: 'Gateway recombination site'
+                });
+            }
+
+            // Add 3' element region
+            if (pos.seq3Start && pos.seq3End) {
+                gb += formatFeature('misc_feature', pos.seq3Start, pos.seq3End, {
+                    label: '3_prime_element',
+                    note: "3' element insert (tag/terminator)"
+                });
+            }
+
+            // Add attB3 site
+            if (pos.attB3Start && pos.attB3End) {
+                gb += formatFeature('protein_bind', pos.attB3Start, pos.attB3End, {
+                    label: 'attB3',
+                    note: 'Gateway recombination site'
+                });
+            }
+
+            // Add backbone3 region if present
+            if (data.hasBackbone && data.backbone3.length > 0 && pos.backbone3Start) {
+                gb += formatFeature('misc_feature', pos.backbone3Start, pos.backbone3End, {
+                    label: '3_prime_backbone',
+                    note: 'pDEST vector backbone (3 prime)'
+                });
+            }
+
+            // Add all carried-over features from Entry clones and pDEST
+            if (data.features && data.features.length > 0) {
+                // Sort features by start position
+                const sortedFeatures = [...data.features].sort((a, b) => a.start - b.start);
+
+                for (const feature of sortedFeatures) {
+                    // Build qualifiers object
+                    const qualifiers = {...feature.qualifiers};
+
+                    // Add source information if not already present
+                    if (!qualifiers.note) {
+                        let sourceDesc = '';
+                        switch (feature.source) {
+                            case '5': sourceDesc = "From 5' Entry clone"; break;
+                            case 'middle': sourceDesc = 'From Middle Entry clone'; break;
+                            case '3': sourceDesc = "From 3' Entry clone"; break;
+                            case 'dest_5prime': sourceDesc = 'From pDEST backbone'; break;
+                            case 'dest_3prime': sourceDesc = 'From pDEST backbone'; break;
+                        }
+                        if (sourceDesc) {
+                            qualifiers.note = sourceDesc;
+                        }
+                    }
+
+                    gb += formatFeature(
+                        feature.type,
+                        feature.start,
+                        feature.end,
+                        qualifiers,
+                        feature.complement
+                    );
+                }
+            }
+
+            gb += `ORIGIN\n`;
+
+            const seq = data.fullSequence.toLowerCase();
+            for (let i = 0; i < seq.length; i += 60) {
+                const lineNum = (i + 1).toString().padStart(9, ' ');
+                const chunk = seq.substring(i, i + 60);
+                const line = chunk.match(/.{1,10}/g)?.join(' ') || chunk;
+                gb += `${lineNum} ${line}\n`;
+            }
+
+            gb += `//\n`;
+
+            downloadFile('multisite_gateway_expression_clone.gb', gb);
+        }
+
+        function exportPrimers() {
+            if (!assembledData) {
+                alert('Please generate assembly first');
+                return;
+            }
+
+            let csv = 'Primer Name,Full Sequence,attB Site,Frame Adjustment,Gene-Specific,Length,Tm,Target pDONR\n';
+            assembledData.primers.forEach(primer => {
+                csv += `"${primer.name}","${primer.fullSequence}","${primer.attb}","${primer.frame}","${primer.geneSpecific}",${primer.fullSequence.length},${primer.tm},"${primer.pdonr}"\n`;
+            });
+
+            downloadFile('multisite_gateway_primers.csv', csv);
+        }
+
+        function exportReport() {
+            if (!assembledData) {
+                alert('Please generate assembly first');
+                return;
+            }
+
+            const data = assembledData;
+            const seq = data.fullSequence;
+            const gc = (seq.match(/[GC]/g) || []).length;
+            const gcPercent = ((gc / seq.length) * 100).toFixed(1);
+
+            let report = 'MULTISITE GATEWAY CLONING REPORT\n';
+            report += '='.repeat(60) + '\n\n';
+            report += `Generated: ${new Date().toLocaleString()}\n\n`;
+
+            report += 'SEQUENCE ELEMENTS\n';
+            report += '-'.repeat(60) + '\n';
+            report += `5' Element:     ${data.seq5.length} bp (${data.sources['5']})\n`;
+            report += `Middle Element: ${data.seqMiddle.length} bp (${data.sources['middle']})\n`;
+            report += `3' Element:     ${data.seq3.length} bp (${data.sources['3']})\n`;
+            if (data.hasBackbone) {
+                report += `pDEST Backbone: ${data.backbone5.length + data.backbone3.length} bp (${data.destName})\n`;
+            }
+            report += '\n';
+
+            report += 'FRAME ADJUSTMENTS\n';
+            report += '-'.repeat(60) + '\n';
+            report += `5' in frame with middle: ${data.frame5 ? 'Yes' : 'No'}`;
+            if (data.frame5 && data.frame5nt) report += ` (+${data.frame5nt.length} nt: ${data.frame5nt})`;
+            report += '\n';
+            report += `3' in frame with middle: ${data.frame3 ? 'Yes' : 'No'}`;
+            if (data.frame3 && data.frame3nt) report += ` (+${data.frame3nt.length} nt: ${data.frame3nt})`;
+            report += '\n\n';
+
+            report += 'ASSEMBLY STATISTICS\n';
+            report += '-'.repeat(60) + '\n';
+            report += `Total Size: ${seq.length} bp\n`;
+            report += `Insert Size: ${data.insertSequence.length} bp\n`;
+            report += `GC Content: ${gcPercent}%\n\n`;
+
+            if (data.primers.length > 0) {
+                report += 'PCR PRIMERS\n';
+                report += '-'.repeat(60) + '\n';
+                data.primers.forEach(primer => {
+                    report += `\n${primer.name}\n`;
+                    report += `  ${primer.fullSequence}\n`;
+                    report += `  Length: ${primer.fullSequence.length} bp | Tm: ~${primer.tm}°C\n`;
+                });
+            }
+
+            report += '\n\nFULL SEQUENCE\n';
+            report += '-'.repeat(60) + '\n';
+            report += seq + '\n';
+
+            downloadFile('multisite_gateway_report.txt', report);
+        }
+
+        function downloadFile(filename, content) {
+            const blob = new Blob([content], {type: 'text/plain'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
