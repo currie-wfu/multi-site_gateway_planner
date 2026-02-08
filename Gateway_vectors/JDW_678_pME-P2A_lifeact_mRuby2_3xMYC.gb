@@ -1,0 +1,135 @@
+LOCUS       JDW_678_pME-P2A_lifeact 3493 bp ds-DNA     circular     21-DEC-2025
+DEFINITION  .
+KEYWORDS    "marker:KanR"
+FEATURES             Location/Qualifiers
+     primer_bind     536..553
+                     /label="M13-fwd"
+                     /ApEinfo_revcolor="#00ffff"
+                     /ApEinfo_fwdcolor="#00ffff"
+                     /note="label: M13-fwd"
+     misc_feature    569..569
+                     /label="attL1"
+                     /ApEinfo_revcolor="#80ff00"
+                     /ApEinfo_fwdcolor="#80ff00"
+                     /note="label: attL1"
+     protein_bind    570..669
+                     /label="attL1"
+                     /ApEinfo_revcolor="#75c6a9"
+                     /ApEinfo_fwdcolor="#75c6a9"
+                     /note="bound_moiety: LR Clonase™ gene: mutant version of attL note: recombination site for the Gateway® LR reaction"
+     CDS             670..1616
+                     /label="lacZα"
+                     /ApEinfo_revcolor="#993366"
+                     /ApEinfo_fwdcolor="#993366"
+                     /note="codon_start: 1 gene: lacZ fragment product: LacZα fragment of β-galactosidase transl_table: 1 translation: EFALGCRRESRAT*DGRGRLDQEVRVHLQGGGGSTGRHHGV*GRRADQGKYAYEGGHGRFGQRPPIQMHR*RRRQSVHGNSNHEDQSHRGRTPAICL*HSCHVVHVWQPYFYQVPERHS*FL*TVLS*GFYLGKSYEIRRWWSRHRHAGHQP*GWLSRLPRPSQRGKLSLQWSRDAEEDQGLGA*YRDDVSSRWWSEGIHSYGTES*WWWPSVLLFRNNLQVKKDRREHQDARYPCR*SPPGKVRGK*Q*NVRSTTRTRSCQVRRAWWWDGRAVQEILRAETH*RGGPEQRTETHFRRGSQLRAEADQRGGPEIL"
+     CDS             683..707
+                     /label="P2A"
+                     /ApEinfo_revcolor="#b4abac"
+                     /ApEinfo_fwdcolor="#b4abac"
+                     /note="codon_start: 1 note: Eukaryotic ribosomes fail to insert a peptide bond between the Gly and Pro residues, yielding separate polypeptides. product: 2A peptide from porcine teschovirus-1 polyprotein transl_table: 1 translation: DVEENPGP"
+     CDS             714..764
+                     /label="Lifeact"
+                     /ApEinfo_revcolor="#3366ff"
+                     /ApEinfo_fwdcolor="#3366ff"
+                     /note="codon_start: 1 product: N-terminal 17 amino acids from S. Cerevisiae Abp140 (Lam et al., 2012, Nat. Methods) transl_table: 1 translation: MGVADLIKKFESISKEE"
+     CDS             786..1496
+                     /label="mRuby2"
+                     /ApEinfo_revcolor="#ff0000"
+                     /ApEinfo_fwdcolor="#ff0000"
+                     /note="codon_start: 1 product: monomeric red fluorescent protein derived from mRuby, with improved photophysical properties (Lam et al., 2012) transl_table: 1 translation: MVSKGEELIKENMRMKVVMEGSVNGHQFKCTGEGEGNPYMGTQTMRIKVIEGGPLPFAFDILATSFMYGSRTFIKYPKGIPDFFKQSFPEGFTWERVTRYEDGGVVTVMQDTSLEDGCLVYHVQVRGVNFPSNGPVMQKKTKGWEPNTEMMYPADGGLRGYTHMALKVDGGGHLSCSFVTTYRSKKTVGNIKMPGIHAVDHRLERLEESDNEMFVVQREHAVAKFAGLGGGMDELYK"
+     CDS             1506..1535
+                     /label="Myc"
+                     /ApEinfo_revcolor="#b4abac"
+                     /ApEinfo_fwdcolor="#b4abac"
+                     /note="codon_start: 1 product: Myc (human c-Myc oncogene) epitope tag transl_table: 1 translation: EQKLISEEDL"
+     CDS             1542..1571
+                     /label="Myc"
+                     /ApEinfo_revcolor="#b4abac"
+                     /ApEinfo_fwdcolor="#b4abac"
+                     /note="codon_start: 1 product: Myc (human c-Myc oncogene) epitope tag transl_table: 1 translation: EQKLISEEDL"
+     CDS             1578..1607
+                     /label="Myc"
+                     /ApEinfo_revcolor="#b4abac"
+                     /ApEinfo_fwdcolor="#b4abac"
+                     /note="codon_start: 1 product: Myc (human c-Myc oncogene) epitope tag transl_table: 1 translation: EQKLISEEDL"
+     protein_bind    1617..1716
+                     /label="attL2"
+                     /ApEinfo_revcolor="#75c6a9"
+                     /ApEinfo_fwdcolor="#75c6a9"
+                     /note="bound_moiety: LR Clonase™ gene: mutant version of attL note: recombination site for the Gateway® LR reaction"
+     primer_bind     complement(1734..1755)
+                     /label="T7"
+                     /ApEinfo_revcolor="#00ff00"
+                     /ApEinfo_fwdcolor="#00ff00"
+                     /note="label: T7"
+     primer_bind     complement(1754..1774)
+                     /label="M13-rev"
+                     /ApEinfo_revcolor="#00ff00"
+                     /ApEinfo_fwdcolor="#00ff00"
+                     /note="label: M13-rev"
+     CDS             1887..2693
+                     /label="KanR"
+                     /ApEinfo_revcolor="#ffff00"
+                     /ApEinfo_fwdcolor="#ffff00"
+                     /note="label: KanR"
+ORIGIN
+        1 CTTTCCTGCG TTATCCCCTG ATTCTGTGGA TAACCGTATT ACCGCCTTTG AGTGAGCTGA
+       61 TACCGCTCGC CGCAGCCGAA CGACCGAGCG CAGCGAGTCA GTGAGCGAGG AAGCGGAAGA
+      121 GCGCCCAATA CGCAAACCGC CTCTCCCCGC GCGTTGGCCG ATTCATTAAT GCAGCTGGCA
+      181 CGACAGGTTT CCCGACTGGA AAGCGGGCAG TGAGCGCAAC GCAATTAATA CGCGTACCGC
+      241 TAGCCAGGAA GAGTTTGTAG AAACGCAAAA AGGCCATCCG TCAGGATGGC CTTCTGCTTA
+      301 GTTTGATGCC TGGCAGTTTA TGGCGGGCGT CCTGCCCGCC ACCCTCCGGG CCGTTGCTTC
+      361 ACAACGTTCA AATCCGCTCC CGGCGGATTT GTCCTACTCA GGAGAGCGTT CACCGACAAA
+      421 CAACAGATAA AACGAAAGGC CCAGTCTTCC GACTGAGCCT TTCGTTTTAT TTGATGCCTG
+      481 GCAGTTCCCT ACTCTCGCGT TAACGCTAGC ATGGATGTTT TCCCAGTCAC GACGTTGTAA
+      541 AACGACGGCC AGTCTTAAGC TCGGGCCCCC AAATAATGAT TTTATTTTGA CTGATAGTGA
+      601 CCTGTTCGTT GCAACAAATT GATAAGCAAT GCTTTTTTAT AATGCCAACT TTGTACAAAA
+      661 AAGCAGGCTG GAATTCGCCC TTGGATGTCG AAGAGAATCC CGGGCCACCT AGGATGGGCG
+      721 TGGCCGACTT GATCAAGAAG TTCGAGTCCA TCTCCAAGGA GGAGGGGGAT CCACCGGTCG
+      781 CCACCATGGT GTCTAAGGGC GAAGAGctga tcaaggaaaa tatgcgtatg aaggtggtcA
+      841 tggaaggttc ggtcaacggc caccaattca aatgcacagg tgaaggagaa ggcaatccgt
+      901 acatgggaac tcaaaccatg aggatcaaag tcatcgaggg aggacccctg ccatttgcct
+      961 ttgacattct tgccacgTCG ttcatgtatg gcagccgtac ttttatcaag tacccgaaag
+     1021 gcattcctga tttctttaaa cagtcctttc ctgagggttt tacttgggaa agagttacGa
+     1081 gatacgaaga tggtggagtc GtCaccgtCa tgcaggacac cagccttgag gatggctgtc
+     1141 tcgtttacca cgTccaagtc agAggggtaa actttccctc caatggtCcc gtgatgcaga
+     1201 agaagaccaa gggttgggag Cctaatacag agatgatgta tccagcagat ggtggtctga
+     1261 ggggatacac tcatatggca ctgaaagttg atggtggtgg ccatCTGtct TGctctTtCg
+     1321 taacaactta caggtcaaaa aagaccgtcg ggaacatcaa gatgcccggt atccatgccg
+     1381 ttgatcaccg cctggaaagg ttagaggaaa gtgacaatga aatgttcgta gtacaacgcg
+     1441 aacacgcagt tgccaagttc gccgggcttg gtggtgggat ggacgagctg tacaagagat
+     1501 ccttagagca gaaactcatt agcgaggagg acctgaacag cgaacagaaa ctcatttccg
+     1561 aagaggatct caactccgag cagaagctga tcagcgagga ggacctgaga tcctgaCAAA
+     1621 TAATGATTTT ATTTTGACTG ATAGTGACCT GTTCGTTGCA ACAAATTGAT GAGCAATTAT
+     1681 TTTTTATAAT GCCAACTTTG TACAAGAAAG CTGGGTGCCA TCCAGCTGAT ATCCCCTATA
+     1741 GTGAGTCGTA TTACATGGTC ATAGCTGTTT CCTGGCAGCT CTGGCCCGTG TCTCAAAATC
+     1801 TCTGATGTTA CATTGCACAA GATAAAATAA TATCATCATG AACAATAAAA CTGTCTGCTT
+     1861 ACATAAACAG TAATACAAGG GGTGTTATGA GCCATATTCA ACGGGAAACG TCGAGGCCGC
+     1921 GATTAAATTC CAACATGGAT GCTGATTTAT ATGGGTATAA ATGGGCTCGC GATAATGTCG
+     1981 GGCAATCAGG TGCGACAATC TATCGCTTGT ATGGGAAGCC CGATGCGCCA GAGTTGTTTC
+     2041 TGAAACATGG CAAAGGTAGC GTTGCCAATG ATGTTACAGA TGAGATGGTC AGACTAAACT
+     2101 GGCTGACGGA ATTTATGCCT CTTCCGACCA TCAAGCATTT TATCCGTACT CCTGATGATG
+     2161 CATGGTTACT CACCACTGCG ATCCCCGGAA AAACAGCATT CCAGGTATTA GAAGAATATC
+     2221 CTGATTCAGG TGAAAATATT GTTGATGCGC TGGCAGTGTT CCTGCGCCGG TTGCATTCGA
+     2281 TTCCTGTTTG TAATTGTCCT TTTAACAGCG ATCGCGTATT TCGTCTCGCT CAGGCGCAAT
+     2341 CACGAATGAA TAACGGTTTG GTTGATGCGA GTGATTTTGA TGACGAGCGT AATGGCTGGC
+     2401 CTGTTGAACA AGTCTGGAAA GAAATGCATA AACTTTTGCC ATTCTCACCG GATTCAGTCG
+     2461 TCACTCATGG TGATTTCTCA CTTGATAACC TTATTTTTGA CGAGGGGAAA TTAATAGGTT
+     2521 GTATTGATGT TGGACGAGTC GGAATCGCAG ACCGATACCA GGATCTTGCC ATCCTATGGA
+     2581 ACTGCCTCGG TGAGTTTTCT CCTTCATTAC AGAAACGGCT TTTTCAAAAA TATGGTATTG
+     2641 ATAATCCTGA TATGAATAAA TTGCAGTTTC ATTTGATGCT CGATGAGTTT TTCTAATCAG
+     2701 AATTGGTTAA TTGGTTGTAA CACTGGCAGA GCATTACGCT GACTTGACGG GACGGCGCAA
+     2761 GCTCATGACC AAAATCCCTT AACGTGAGTT ACGCGTCGTT CCACTGAGCG TCAGACCCCG
+     2821 TAGAAAAGAT CAAAGGATCT TCTTGAGATC CTTTTTTTCT GCGCGTAATC TGCTGCTTGC
+     2881 AAACAAAAAA ACCACCGCTA CCAGCGGTGG TTTGTTTGCC GGATCAAGAG CTACCAACTC
+     2941 TTTTTCCGAA GGTAACTGGC TTCAGCAGAG CGCAGATACC AAATACTGTT CTTCTAGTGT
+     3001 AGCCGTAGTT AGGCCACCAC TTCAAGAACT CTGTAGCACC GCCTACATAC CTCGCTCTGC
+     3061 TAATCCTGTT ACCAGTGGCT GCTGCCAGTG GCGATAAGTC GTGTCTTACC GGGTTGGACT
+     3121 CAAGACGATA GTTACCGGAT AAGGCGCAGC GGTCGGGCTG AACGGGGGGT TCGTGCACAC
+     3181 AGCCCAGCTT GGAGCGAACG ACCTACACCG AACTGAGATA CCTACAGCGT GAGCTATGAG
+     3241 AAAGCGCCAC GCTTCCCGAA GGGAGAAAGG CGGACAGGTA TCCGGTAAGC GGCAGGGTCG
+     3301 GAACAGGAGA GCGCACGAGG GAGCTTCCAG GGGGAAACGC CTGGTATCTT TATAGTCCTG
+     3361 TCGGGTTTCG CCACCTCTGA CTTGAGCGTC GATTTTTGTG ATGCTCGTCA GGGGGGCGGA
+     3421 GCCTATGGAA AAACGCCAGC AACGCGGCCT TTTTACGGTT CCTGGCCTTT TGCTGGCCTT
+     3481 TTGCTCACAT GTT
+//

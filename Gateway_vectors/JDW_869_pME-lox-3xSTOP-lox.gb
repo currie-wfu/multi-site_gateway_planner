@@ -1,0 +1,234 @@
+LOCUS       JDW_869_pME-lox-3xSTOP- 3431 bp ds-DNA     circular     21-DEC-2025
+DEFINITION  A Gateway compatible middle entry clone containing a loxP flanked
+            SV40 polyA, bGH polyA, and SV40 pA stop cassette.
+SOURCE      synthetic DNA construct
+  ORGANISM  synthetic DNA construct
+COMMENT     Imported using the Genbank importer. File name:
+            addgene-plasmid-224521-sequence-447342.gbk SGRef: number: 1; type:
+            "Journal Article"; journalName: "Development."; date: "2025-11-15";
+            volume: "152(22):dev204308. doi"; pages: " 10.1242/dev.204308. Epub
+            2025 Nov 13" Sequence Label: pME-lox-3xSTOP-lox (JDW 869)
+FEATURES             Location/Qualifiers
+     source          1..3431
+                     /label="source"
+                     /ApEinfo_revcolor="#75c6a9"
+                     /ApEinfo_fwdcolor="#75c6a9"
+                     /mol_type="other DNA"
+                     /organism="synthetic DNA construct"
+     primer_bind     1..17
+                     /label="M13 fwd"
+                     /ApEinfo_revcolor="#c6c9d1"
+                     /ApEinfo_fwdcolor="#c6c9d1"
+                     /note="common sequencing primer, one of multiple similar variants"
+     protein_bind    33..132
+                     /label="attL1"
+                     /ApEinfo_revcolor="#b1ff67"
+                     /ApEinfo_fwdcolor="#b1ff67"
+                     /note="recombination site for the Gateway(R) LR reaction"
+                     /gene="mutant version of attL"
+                     /bound_moiety="LR Clonase(TM)"
+     protein_bind    complement(133..166)
+                     /label="loxP"
+                     /ApEinfo_revcolor="#ffef86"
+                     /ApEinfo_fwdcolor="#ffef86"
+                     /note="Cre-mediated recombination occurs in the 8-bp core sequence (ATGTATGC) (Shaw et al., 2021)."
+                     /bound_moiety="Cre recombinase"
+     primer_bind     186..203
+                     /label="SP6"
+                     /ApEinfo_revcolor="#f8d3a9"
+                     /ApEinfo_fwdcolor="#f8d3a9"
+                     /note="SP6 promoter, forward primer"
+     promoter        186..204
+                     /label="SP6 promoter"
+                     /ApEinfo_revcolor="#75c6a9"
+                     /ApEinfo_fwdcolor="#75c6a9"
+                     /note="promoter for bacteriophage SP6 RNA polymerase"
+     polyA_signal    205..339
+                     /label="SV40 poly(A) signal"
+                     /ApEinfo_revcolor="#b1ff67"
+                     /ApEinfo_fwdcolor="#b1ff67"
+                     /note="SV40 polyadenylation signal"
+     primer_bind     complement(459..475)
+                     /label="SK primer"
+                     /ApEinfo_revcolor="#75c6a9"
+                     /ApEinfo_fwdcolor="#75c6a9"
+                     /note="common sequencing primer, one of multiple similar variants"
+     primer_bind     complement(459..475)
+                     /label="pBluescriptSK"
+                     /ApEinfo_revcolor="#ffef86"
+                     /ApEinfo_fwdcolor="#ffef86"
+                     /note="For pBluescript vector"
+     polyA_signal    476..587
+                     /label="bGH poly(A) signal"
+                     /ApEinfo_revcolor="#75c6a9"
+                     /ApEinfo_fwdcolor="#75c6a9"
+                     /note="bovine growth hormone polyadenylation signal"
+     polyA_signal    679..813
+                     /label="SV40 poly(A) signal"
+                     /ApEinfo_revcolor="#c6c9d1"
+                     /ApEinfo_fwdcolor="#c6c9d1"
+                     /note="SV40 polyadenylation signal"
+     promoter        complement(899..917)
+                     /label="T3 promoter"
+                     /ApEinfo_revcolor="#84b0dc"
+                     /ApEinfo_fwdcolor="#84b0dc"
+                     /note="promoter for bacteriophage T3 RNA polymerase"
+     primer_bind     complement(899..919)
+                     /label="T3"
+                     /ApEinfo_revcolor="#c7b0e3"
+                     /ApEinfo_fwdcolor="#c7b0e3"
+                     /note="T3 promoter, forward primer"
+     primer_bind     complement(938..954)
+                     /label="M13 rev"
+                     /ApEinfo_revcolor="#b4abac"
+                     /ApEinfo_fwdcolor="#b4abac"
+                     /note="common sequencing primer, one of multiple similar variants"
+     primer_bind     complement(951..973)
+                     /label="M13/pUC Reverse"
+                     /ApEinfo_revcolor="#84b0dc"
+                     /ApEinfo_fwdcolor="#84b0dc"
+                     /note="In lacZ gene"
+     protein_bind    962..978
+                     /label="lac operator"
+                     /ApEinfo_revcolor="#84b0dc"
+                     /ApEinfo_fwdcolor="#84b0dc"
+                     /note="The lac repressor binds to the lac operator to inhibit transcription in E. coli. This inhibition can be relieved by adding lactose or isopropyl-beta-D-thiogalactopyranoside (IPTG)."
+                     /bound_moiety="lac repressor encoded by lacI"
+     protein_bind    complement(986..1019)
+                     /label="loxP"
+                     /ApEinfo_revcolor="#84b0dc"
+                     /ApEinfo_fwdcolor="#84b0dc"
+                     /note="Cre-mediated recombination occurs in the 8-bp core sequence (ATGTATGC) (Shaw et al., 2021)."
+                     /bound_moiety="Cre recombinase"
+     protein_bind    complement(1020..1119)
+                     /label="attL2"
+                     /ApEinfo_revcolor="#c6c9d1"
+                     /ApEinfo_fwdcolor="#c6c9d1"
+                     /note="recombination site for the Gateway(R) LR reaction"
+                     /gene="mutant version of attL"
+                     /bound_moiety="LR Clonase(TM)"
+     promoter        complement(1137..1155)
+                     /label="T7 promoter"
+                     /ApEinfo_revcolor="#d59687"
+                     /ApEinfo_fwdcolor="#d59687"
+                     /note="promoter for bacteriophage T7 RNA polymerase"
+     primer_bind     complement(1160..1176)
+                     /label="M13 rev"
+                     /ApEinfo_revcolor="#b4abac"
+                     /ApEinfo_fwdcolor="#b4abac"
+                     /note="common sequencing primer, one of multiple similar variants"
+     primer_bind     complement(1278..1297)
+                     /label="pENTR-R"
+                     /ApEinfo_revcolor="#84b0dc"
+                     /ApEinfo_fwdcolor="#84b0dc"
+                     /note="pENTR vectors, reverse primer"
+     CDS             1289..2098
+                     /label="KanR"
+                     /ApEinfo_revcolor="#84b0dc"
+                     /ApEinfo_fwdcolor="#84b0dc"
+                     /note="confers resistance to kanamycin in bacteria or G418 (Geneticin(R)) in eukaryotes"
+                     /gene="aph(3')-Ia"
+                     /product="aminoglycoside phosphotransferase"
+                     /translation="MSHIQRETSRPRLNSNMDADLYGYKWARDNVGQSGATIYRLYGKPDAPELFLKHGKGSVANDVTDEMVRLNWLTEFMPLPTIKHFIRTPDDAWLLTTAIPGKTAFQVLEEYPDSGENIVDALAVFLRRLHSIPVCNCPFNSDRVFRLAQAQSRMNNGLVDASDFDDERNGWPVEQVWKEMHKLLPFSPDSVVTHGDFSLDNLIFDEGKLIGCIDVGRVGIADRYQDLAILWNCLGEFSPSLQKRLFQKYGIDNPDMNKLQFHLMLDEFF*"
+     primer_bind     complement(1356..1375)
+                     /label="Kan-R"
+                     /ApEinfo_revcolor="#ff9ccd"
+                     /ApEinfo_fwdcolor="#ff9ccd"
+                     /note="Kanamycin resistance gene, reverse primer"
+     rep_origin      2245..2833
+                     /label="ori"
+                     /ApEinfo_revcolor="#85dae9"
+                     /ApEinfo_fwdcolor="#85dae9"
+                     /note="high-copy-number ColE1/pMB1/pBR322/pUC origin of replication"
+                     /direction="RIGHT"
+     primer_bind     2734..2753
+                     /label="pBR322ori-F"
+                     /ApEinfo_revcolor="#b7e6d7"
+                     /ApEinfo_fwdcolor="#b7e6d7"
+                     /note="pBR322 origin, forward primer"
+     primer_bind     2987..3004
+                     /label="L4440"
+                     /ApEinfo_revcolor="#85dae9"
+                     /ApEinfo_fwdcolor="#85dae9"
+                     /note="L4440 vector, forward primer"
+     terminator      complement(3163..3190)
+                     /label="rrnB T2 terminator"
+                     /ApEinfo_revcolor="#f8d3a9"
+                     /ApEinfo_fwdcolor="#f8d3a9"
+                     /note="transcription terminator T2 from the E. coli rrnB gene"
+     terminator      complement(3282..3368)
+                     /label="rrnB T1 terminator"
+                     /ApEinfo_revcolor="#d6b295"
+                     /ApEinfo_fwdcolor="#d6b295"
+                     /note="transcription terminator T1 from the E. coli rrnB gene"
+                     /gene="Escherichia coli rrnB"
+     primer_bind     3417..8
+                     /label="M13/pUC Forward"
+                     /ApEinfo_revcolor="#c7b0e3"
+                     /ApEinfo_fwdcolor="#c7b0e3"
+                     /note="In lacZ gene"
+     primer_bind     3431..17
+                     /label="M13 Forward"
+                     /ApEinfo_revcolor="#d6b295"
+                     /ApEinfo_fwdcolor="#d6b295"
+                     /note="In lacZ gene. Also called M13-F20 or M13 (-21) Forward"
+ORIGIN
+        1 gtaaaacgac ggccagtctt aagctcgggc cccaaataat gattttattt tgactgatag
+       61 tgacctgttc gttgcaacaa attgatgagc aatgcttttt tataatgcca actttgtaca
+      121 aaaaagcagg ctataacttc gtatagcata cattatacga agttatcgga gcaagcttgg
+      181 atcccattta ggtgacacta tagaaacttg tttattgcag cttataatgg ttacaaataa
+      241 agcaatagca tcacaaattt cacaaataaa gcattttttt cactgcattc tagttgtggt
+      301 ttgtccaaac tcatcaatgt atcttatcat gtctggatct gcgacctcga gggatcataa
+      361 tcagccatac cacatttgta gaggttttac ttgctttaaa aaacctccca cacctccccc
+      421 tgaacctgaa acataaaatg aatgcaattg ttgttgttga tccactagtt ctagactgtg
+      481 ccttctagtt gccagccatc tgttgtttgc ccctcccccg tgccttcctt gaccctggaa
+      541 ggtgccactc ccactgtcct ttcctaataa aatgaggaaa ttgcatcatc gagggggggc
+      601 ccggtaacca ccgcggtggc ggcgatctcg cggccgcaag taaagcggcc ctagaactat
+      661 agtgagtcgt attacgtaga tccagacatg ataagataca ttgatgagtt tggacaaacc
+      721 acaactagaa tgcagtgaaa aaaatgcttt atttgtgaaa tttgtgatgc tattgcttta
+      781 tttgtaacca ttataagctg caataaacaa gttaacaaca acaattgcat tcattttatg
+      841 tttcaggttc agggggaggt gtgggaggtt ttttgggccc ggtacccagc ttttgttccc
+      901 tttagtgagg gttaattgcg cgcttggcgt aatcatggtc atagctgttt cctgtgtgaa
+      961 attgttatcc gctcacaatt ccacaataac ttcgtatagc atacattata cgaagttata
+     1021 cccagctttc ttgtacaaag ttggcattat aagaaagcat tgcttatcaa tttgttgcaa
+     1081 cgaacaggtc actatcagtc aaaataaaat cattatttgc catccagctg atatccccta
+     1141 tagtgagtcg tattacatgg tcatagctgt ttcctggcag ctctggcccg tgtctcaaaa
+     1201 tctctgatgt tacattgcac aagataaaaa tatatcatca tgaacaataa aactgtctgc
+     1261 ttacataaac agtaatacaa ggggtgttat gagccatatt caacgggaaa cgtcgaggcc
+     1321 gcgattaaat tccaacatgg atgctgattt atatgggtat aaatgggctc gcgataatgt
+     1381 cgggcaatca ggtgcgacaa tctatcgctt gtatgggaag cccgatgcgc cagagttgtt
+     1441 tctgaaacat ggcaaaggta gcgttgccaa tgatgttaca gatgagatgg tcagactaaa
+     1501 ctggctgacg gaatttatgc ctcttccgac catcaagcat tttatccgta ctcctgatga
+     1561 tgcatggtta ctcaccactg cgatccccgg aaaaacagca ttccaggtat tagaagaata
+     1621 tcctgattca ggtgaaaata ttgttgatgc gctggcagtg ttcctgcgcc ggttgcattc
+     1681 gattcctgtt tgtaattgtc cttttaacag cgatcgcgta tttcgtctcg ctcaggcgca
+     1741 atcacgaatg aataacggtt tggttgatgc gagtgatttt gatgacgagc gtaatggctg
+     1801 gcctgttgaa caagtctgga aagaaatgca taaacttttg ccattctcac cggattcagt
+     1861 cgtcactcat ggtgatttct cacttgataa ccttattttt gacgagggga aattaatagg
+     1921 ttgtattgat gttggacgag tcggaatcgc agaccgatac caggatcttg ccatcctatg
+     1981 gaactgcctc ggtgagtttt ctccttcatt acagaaacgg ctttttcaaa aatatggtat
+     2041 tgataatcct gatatgaata aattgcagtt tcatttgatg ctcgatgagt ttttctaatc
+     2101 agaattggtt aattggttgt aacactggca gagcattacg ctgacttgac gggacggcgc
+     2161 aagctcatga ccaaaatccc ttaacgtgag ttacgcgtcg ttccactgag cgtcagaccc
+     2221 cgtagaaaag atcaaaggat cttcttgaga tccttttttt ctgcgcgtaa tctgctgctt
+     2281 gcaaacaaaa aaaccaccgc taccagcggt ggtttgtttg ccggatcaag agctaccaac
+     2341 tctttttccg aaggtaactg gcttcagcag agcgcagata ccaaatactg ttcttctagt
+     2401 gtagccgtag ttaggccacc acttcaagaa ctctgtagca ccgcctacat acctcgctct
+     2461 gctaatcctg ttaccagtgg ctgctgccag tggcgataag tcgtgtctta ccgggttgga
+     2521 ctcaagacga tagttaccgg ataaggcgca gcggtcgggc tgaacggggg gttcgtgcac
+     2581 acagcccagc ttggagcgaa cgacctacac cgaactgaga tacctacagc gtgagctatg
+     2641 agaaagcgcc acgcttcccg aagggagaaa ggcggacagg tatccggtaa gcggcagggt
+     2701 cggaacagga gagcgcacga gggagcttcc agggggaaac gcctggtatc tttatagtcc
+     2761 tgtcgggttt cgccacctct gacttgagcg tcgatttttg tgatgctcgt caggggggcg
+     2821 gagcctatgg aaaaacgcca gcaacgcggc ctttttacgg ttcctggcct tttgctggcc
+     2881 ttttgctcac atgttctttc ctgcgttatc ccctgattct gtggataacc gtattaccgc
+     2941 ctttgagtga gctgataccg ctcgccgcag ccgaacgacc gagcgcagcg agtcagtgag
+     3001 cgaggaagcg gaagagcgcc caatacgcaa accgcctctc cccgcgcgtt ggccgattca
+     3061 ttaatgcagc tggcacgaca ggtttcccga ctggaaagcg ggcagtgagc gcaacgcaat
+     3121 taatacgcgt accgctagcc aggaagagtt tgtagaaacg caaaaaggcc atccgtcagg
+     3181 atggccttct gcttagtttg atgcctggca gtttatggcg ggcgtcctgc ccgccaccct
+     3241 ccgggccgtt gcttcacaac gttcaaatcc gctcccggcg gatttgtcct actcaggaga
+     3301 gcgttcaccg acaaacaaca gataaaacga aaggcccagt cttccgactg agcctttcgt
+     3361 tttatttgat gcctggcagt tccctactct cgcgttaacg ctagcatgga tgttttccca
+     3421 gtcacgacgt t
+//
