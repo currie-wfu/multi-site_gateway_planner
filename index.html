@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gateway Cloning Tools - Currie Lab</title>
-    <link href="https://fonts.googleapis.com/css2?family=Karla:wght@400;700&family=Molengo&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Karla:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -13,7 +13,7 @@
         }
 
         body {
-            font-family: 'Molengo', sans-serif;
+            font-family: 'Inter', sans-serif;
             background: #f5f5f5;
             min-height: 100vh;
         }
@@ -557,7 +557,7 @@
             border: 2px solid #e0e0e0;
             border-radius: 8px;
             font-size: 1rem;
-            font-family: 'Molengo', sans-serif;
+            font-family: 'Inter', sans-serif;
             transition: all 0.3s;
         }
 
@@ -751,7 +751,7 @@
             border-radius: 6px;
             font-size: 1em;
             min-width: 300px;
-            font-family: 'Molengo', sans-serif;
+            font-family: 'Inter', sans-serif;
         }
 
         .viewer-controls select:focus {
@@ -774,14 +774,20 @@
         }
 
         .viewer-main {
-            display: grid;
-            grid-template-columns: 400px 1fr;
+            display: flex;
+            flex-direction: column;
             gap: 20px;
             padding: 20px;
         }
 
+        .viewer-top-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
         @media (max-width: 1000px) {
-            .viewer-main {
+            .viewer-top-row {
                 grid-template-columns: 1fr;
             }
         }
@@ -830,8 +836,7 @@
 
         #circularMap {
             width: 100%;
-            max-width: 360px;
-            height: 360px;
+            aspect-ratio: 1;
             margin: 0 auto;
             display: block;
         }
@@ -876,6 +881,30 @@
             font-size: 0.9em;
         }
 
+        .zoom-preset {
+            padding: 3px 10px !important;
+            font-size: 0.8em !important;
+            background: #e8e0cc;
+            border: 1px solid #c5b78e;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #5a4f35;
+            transition: all 0.2s;
+        }
+
+        .zoom-preset:hover {
+            background: #9d7f37;
+            color: white;
+            border-color: #9d7f37;
+        }
+
+        .zoom-preset.active {
+            background: #9d7f37;
+            color: white;
+            border-color: #7a6229;
+        }
+
         .linear-view-scroll {
             overflow-x: auto;
             overflow-y: hidden;
@@ -887,39 +916,25 @@
             min-width: 100%;
         }
 
-        .sequence-view {
-            background: white;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            padding: 15px;
-            margin-top: 20px;
+        .inline-sequence {
             font-family: 'Courier New', monospace;
-            font-size: 14px;
-            line-height: 1.6;
-            max-height: 300px;
-            overflow-y: auto;
+            white-space: pre;
+            padding: 6px 0;
+            border-top: 2px solid #9d7f37;
+            background: #fafafa;
         }
 
-        .sequence-line {
+        .seq-row {
             display: flex;
-            margin-bottom: 5px;
+            align-items: center;
         }
 
-        .sequence-position {
-            width: 70px;
-            color: #999;
-            flex-shrink: 0;
-            text-align: right;
-            padding-right: 15px;
-        }
-
-        .sequence-text {
-            word-break: break-all;
-            letter-spacing: 1px;
-        }
-
-        .sequence-text span {
-            padding: 1px 0;
+        .seq-nt {
+            display: inline-block;
+            text-align: center;
+            font-weight: 700;
+            line-height: 1;
+            border-right: 1px solid rgba(0,0,0,0.04);
         }
 
         .feature-list {
@@ -935,6 +950,40 @@
             border-bottom: 1px solid #eee;
             cursor: pointer;
             transition: background 0.2s;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .feature-item-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .feature-copy-btn {
+            flex-shrink: 0;
+            padding: 4px 8px;
+            font-size: 0.78em;
+            background: #f0f0f0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            color: #555;
+            transition: all 0.2s;
+            white-space: nowrap;
+            align-self: center;
+        }
+
+        .feature-copy-btn:hover {
+            background: #9d7f37;
+            color: white;
+            border-color: #9d7f37;
+        }
+
+        .feature-copy-btn.copied {
+            background: #4caf50;
+            color: white;
+            border-color: #388e3c;
         }
 
         .feature-item:hover {
@@ -1381,45 +1430,48 @@
 
             <div id="viewerContent" style="display: none;">
                 <div class="viewer-main">
-                    <!-- Left Panel: Circular Map & Info -->
-                    <div class="viewer-panel">
-                        <h2>Vector Information</h2>
-                        <div class="vector-info">
-                            <div class="vector-info-item">
-                                <span class="vector-info-label">Name:</span>
-                                <span class="vector-info-value" id="viewerVectorName">-</span>
-                            </div>
-                            <div class="vector-info-item">
-                                <span class="vector-info-label">Size:</span>
-                                <span class="vector-info-value" id="viewerVectorSize">-</span>
-                            </div>
-                            <div class="vector-info-item">
-                                <span class="vector-info-label">Type:</span>
-                                <span class="vector-info-value" id="viewerVectorType">-</span>
-                            </div>
-                            <div class="vector-info-item">
-                                <span class="vector-info-label">GC Content:</span>
-                                <span class="vector-info-value" id="viewerGC">-</span>
+                    <!-- Top Row: Vector Info & Feature List side by side -->
+                    <div class="viewer-top-row">
+                        <div class="viewer-panel">
+                            <h2>Vector Information</h2>
+                            <div class="vector-info">
+                                <div class="vector-info-item">
+                                    <span class="vector-info-label">Name:</span>
+                                    <span class="vector-info-value" id="viewerVectorName">-</span>
+                                </div>
+                                <div class="vector-info-item">
+                                    <span class="vector-info-label">Size:</span>
+                                    <span class="vector-info-value" id="viewerVectorSize">-</span>
+                                </div>
+                                <div class="vector-info-item">
+                                    <span class="vector-info-label">Type:</span>
+                                    <span class="vector-info-value" id="viewerVectorType">-</span>
+                                </div>
+                                <div class="vector-info-item">
+                                    <span class="vector-info-label">GC Content:</span>
+                                    <span class="vector-info-value" id="viewerGC">-</span>
+                                </div>
                             </div>
                         </div>
-
-                        <h2>Circular Map</h2>
-                        <svg id="circularMap"></svg>
-
-                        <h2>Features (<span id="featureCount">0</span>)</h2>
-                        <div class="feature-list" id="featureList">
-                            <div class="no-vector-message">Select a vector to view features</div>
+                        <div class="viewer-panel">
+                            <h2>Features (<span id="featureCount">0</span>)</h2>
+                            <div class="feature-list" id="featureList">
+                                <div class="no-vector-message">Select a vector to view features</div>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Right Panel: Linear View & Sequence -->
+                    <!-- Linear Map + Sequence (scroll together) -->
                     <div class="viewer-panel" style="overflow: hidden;">
-                        <h2>Linear Map</h2>
+                        <h2>Linear Map & Sequence</h2>
                         <div class="linear-view-container">
                             <div class="linear-controls">
                                 <label>Zoom: </label>
                                 <input type="range" id="linearZoom" min="1" max="20" value="1" onchange="updateLinearView()">
                                 <span id="zoomLevel">1x</span>
+                                <button class="zoom-preset" onclick="setZoom(6)">6x</button>
+                                <button class="zoom-preset" onclick="setZoom(10)">10x</button>
+                                <button class="zoom-preset" onclick="setZoom(20)">20x</button>
 
                                 <label style="margin-left: 20px;">Go to position: </label>
                                 <input type="number" id="gotoPosition" min="1" placeholder="bp">
@@ -1427,20 +1479,15 @@
                             </div>
                             <div class="linear-view-scroll" id="linearViewScroll">
                                 <svg id="linearView"></svg>
+                                <div class="inline-sequence" id="sequenceView"></div>
                             </div>
                         </div>
+                    </div>
 
-                        <h2>Sequence</h2>
-                        <div class="linear-controls" style="background: #f5f5f5; padding: 10px 15px; border-radius: 6px 6px 0 0;">
-                            <label>Show region: </label>
-                            <input type="number" id="seqStart" min="1" value="1" style="width: 80px;"> -
-                            <input type="number" id="seqEnd" min="1" value="500" style="width: 80px;">
-                            <button onclick="updateSequenceView()">Show</button>
-                            <button onclick="showFullSequence()">Show All</button>
-                        </div>
-                        <div class="sequence-view" id="sequenceView">
-                            <div class="no-vector-message">Select a vector to view sequence</div>
-                        </div>
+                    <!-- Circular Map (full width, large) -->
+                    <div class="viewer-panel">
+                        <h2>Circular Map</h2>
+                        <svg id="circularMap"></svg>
                     </div>
                 </div>
             </div>
@@ -3064,11 +3111,7 @@
                 updateVectorInfo();
                 drawCircularMapViewer();
                 updateLinearView();
-                document.getElementById('seqEnd').value = Math.min(500, size);
-                document.getElementById('seqEnd').max = size;
-                document.getElementById('seqStart').max = size;
                 document.getElementById('gotoPosition').max = size;
-                updateSequenceView();
                 updateFeatureList();
 
             } catch (error) {
@@ -3205,10 +3248,13 @@
                 const label = f.qualifiers.label || f.qualifiers.gene || f.qualifiers.product || f.qualifiers.note || f.type;
                 const direction = f.complement ? '(complement)' : '';
                 return `
-                    <div class="feature-item" onclick="highlightFeature(${i})" title="${f.qualifiers.note || ''}">
-                        <span class="feature-type ${f.type}">${f.type}</span>
-                        <span class="feature-name">${label}</span>
-                        <div class="feature-location">${f.start}..${f.end} ${direction}</div>
+                    <div class="feature-item" title="${f.qualifiers.note || ''}">
+                        <div class="feature-item-info" onclick="highlightFeature(${i})">
+                            <span class="feature-type ${f.type}">${f.type}</span>
+                            <span class="feature-name">${label}</span>
+                            <div class="feature-location">${f.start}..${f.end} ${direction}</div>
+                        </div>
+                        <button class="feature-copy-btn" onclick="event.stopPropagation(); copyFeatureSequence(${i}, this)">Copy</button>
                     </div>
                 `;
             }).join('');
@@ -3221,25 +3267,38 @@
             const feature = displayFeatures[index];
             if (!feature) return;
 
-            // Update sequence view to show this feature
-            document.getElementById('seqStart').value = Math.max(1, feature.start - 50);
-            document.getElementById('seqEnd').value = Math.min(currentViewerVector.size, feature.end + 50);
-            updateSequenceView();
-
-            // Scroll linear view to feature
+            // Scroll linear view to feature (sequence will update via scroll handler)
             const zoom = parseInt(document.getElementById('linearZoom').value);
             const scrollContainer = document.getElementById('linearViewScroll');
             const pixelsPerBp = zoom;
             scrollContainer.scrollLeft = (feature.start - 100) * pixelsPerBp;
         }
 
+        function copyFeatureSequence(index, btn) {
+            const displayFeatures = viewerFeatures.filter(f =>
+                f.type !== 'source' && f.type !== 'primer_bind'
+            );
+            const feature = displayFeatures[index];
+            if (!feature || !currentViewerVector) return;
+
+            const seq = currentViewerVector.sequence.substring(feature.start - 1, feature.end).toUpperCase();
+            navigator.clipboard.writeText(seq).then(() => {
+                btn.textContent = 'Copied!';
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.textContent = 'Copy';
+                    btn.classList.remove('copied');
+                }, 1500);
+            });
+        }
+
         function drawCircularMapViewer() {
             const svg = document.getElementById('circularMap');
-            const width = 360;
-            const height = 360;
+            const width = 600;
+            const height = 600;
             const centerX = width / 2;
             const centerY = height / 2;
-            const radius = 130;
+            const radius = 220;
 
             svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
 
@@ -3281,20 +3340,30 @@
                         const labelY = centerY + labelRadius * Math.sin(midAngle);
 
                         // Truncate label
-                        const shortLabel = label.length > 12 ? label.substring(0, 10) + '..' : label;
+                        const shortLabel = label.length > 18 ? label.substring(0, 16) + '..' : label;
 
                         svgContent += `<text x="${labelX}" y="${labelY}" text-anchor="middle"
-                            dominant-baseline="middle" font-size="8" fill="#333" font-weight="500"
+                            dominant-baseline="middle" font-size="12" fill="#333" font-weight="500"
                             transform="rotate(${(midAngle * 180 / Math.PI) + 90}, ${labelX}, ${labelY})">${shortLabel}</text>`;
                     }
                 }
             });
 
             // Center text
-            svgContent += `<text x="${centerX}" y="${centerY - 10}" text-anchor="middle" font-size="12" font-weight="bold" fill="#333">${currentViewerVector.name}</text>`;
-            svgContent += `<text x="${centerX}" y="${centerY + 10}" text-anchor="middle" font-size="11" fill="#666">${currentViewerVector.size.toLocaleString()} bp</text>`;
+            svgContent += `<text x="${centerX}" y="${centerY - 10}" text-anchor="middle" font-size="16" font-weight="bold" fill="#333">${currentViewerVector.name}</text>`;
+            svgContent += `<text x="${centerX}" y="${centerY + 14}" text-anchor="middle" font-size="14" fill="#666">${currentViewerVector.size.toLocaleString()} bp</text>`;
 
             svg.innerHTML = svgContent;
+        }
+
+        function setZoom(level) {
+            const slider = document.getElementById('linearZoom');
+            slider.value = level;
+            // Update active state on preset buttons
+            document.querySelectorAll('.zoom-preset').forEach(btn => {
+                btn.classList.toggle('active', parseInt(btn.textContent) === level);
+            });
+            updateLinearView();
         }
 
         function updateLinearView() {
@@ -3325,7 +3394,7 @@
             for (let pos = 0; pos <= totalLength; pos += markerInterval) {
                 const x = pos * pixelsPerBp;
                 svgContent += `<line x1="${x}" y1="${trackY + trackHeight}" x2="${x}" y2="${trackY + trackHeight + 8}" stroke="#999" stroke-width="1"/>`;
-                svgContent += `<text x="${x}" y="${trackY + trackHeight + 20}" text-anchor="middle" font-size="10" fill="#666">${pos}</text>`;
+                svgContent += `<text x="${x}" y="${trackY + trackHeight + 20}" text-anchor="middle" font-size="12" fill="#666">${pos}</text>`;
             }
 
             // Draw features
@@ -3373,12 +3442,13 @@
 
                 // Add label if feature is wide enough
                 if (featureWidth > 50) {
-                    const shortLabel = label.length > featureWidth / 7 ? label.substring(0, Math.floor(featureWidth / 7)) + '..' : label;
-                    svgContent += `<text x="${x1 + featureWidth / 2}" y="${y + 12}" text-anchor="middle" font-size="9" fill="#333">${shortLabel}</text>`;
+                    const shortLabel = label.length > featureWidth / 9 ? label.substring(0, Math.floor(featureWidth / 9)) + '..' : label;
+                    svgContent += `<text x="${x1 + featureWidth / 2}" y="${y + 12}" text-anchor="middle" font-size="13" fill="#333">${shortLabel}</text>`;
                 }
             });
 
             svg.innerHTML = svgContent;
+            updateSequenceView();
         }
 
         function goToPosition() {
@@ -3389,69 +3459,89 @@
             const scrollContainer = document.getElementById('linearViewScroll');
             const pixelsPerBp = zoom;
             scrollContainer.scrollLeft = (pos - 100) * pixelsPerBp;
-
-            // Also update sequence view
-            document.getElementById('seqStart').value = Math.max(1, pos - 250);
-            document.getElementById('seqEnd').value = Math.min(currentViewerVector.size, pos + 250);
-            updateSequenceView();
         }
 
         function updateSequenceView() {
             if (!currentViewerVector) return;
 
-            const start = parseInt(document.getElementById('seqStart').value) || 1;
-            const end = parseInt(document.getElementById('seqEnd').value) || 500;
             const sequence = currentViewerVector.sequence;
+            const totalLength = currentViewerVector.size;
+            const zoom = parseInt(document.getElementById('linearZoom').value);
+            const pixelsPerBp = zoom;
 
-            const seqStart = Math.max(0, start - 1);
-            const seqEnd = Math.min(sequence.length, end);
-            const displaySeq = sequence.substring(seqStart, seqEnd);
-
-            // Find features in this region
+            // Find all features for coloring
             const regionFeatures = viewerFeatures.filter(f =>
-                f.start <= seqEnd && f.end >= seqStart && f.type !== 'source'
+                f.type !== 'source'
             );
 
-            // Create colored sequence
             const seqView = document.getElementById('sequenceView');
-            let html = '';
 
-            // Display 60 bp per line
-            const lineLength = 60;
-            for (let i = 0; i < displaySeq.length; i += lineLength) {
-                const lineStart = seqStart + i + 1;
-                const lineSeq = displaySeq.substring(i, i + lineLength);
-
-                html += '<div class="sequence-line">';
-                html += `<span class="sequence-position">${lineStart}</span>`;
-                html += '<span class="sequence-text">';
-
-                // Color each nucleotide based on features
-                for (let j = 0; j < lineSeq.length; j++) {
-                    const absPos = seqStart + i + j + 1;
-                    const nt = lineSeq[j];
-
-                    // Find feature at this position
-                    const feature = regionFeatures.find(f => absPos >= f.start && absPos <= f.end);
-                    if (feature) {
-                        html += `<span style="background-color: ${feature.color};" title="${feature.qualifiers.label || feature.type}: ${feature.start}..${feature.end}">${nt}</span>`;
-                    } else {
-                        html += nt;
-                    }
-                }
-
-                html += '</span></div>';
+            // At low zoom, each bp is very narrow - show sequence only when zoomed enough
+            if (pixelsPerBp < 6) {
+                seqView.innerHTML = '<div style="padding: 8px; color: #999; font-style: italic; font-family: Inter, sans-serif; font-size: 13px;">Zoom in (6x+) to see sequence aligned with features</div>';
+                seqView.style.width = '';
+                return;
             }
+
+            const charWidth = pixelsPerBp;
+            const totalWidth = totalLength * pixelsPerBp;
+            seqView.style.width = totalWidth + 'px';
+
+            // Scale font size with zoom level for readability
+            const fontSize = Math.min(Math.max(charWidth * 0.85, 10), 20);
+            const rowHeight = Math.max(fontSize + 8, 22);
+            const positionFontSize = Math.min(Math.max(charWidth * 0.6, 9), 14);
+
+            // For very large sequences at high zoom, limit rendering to visible region
+            const scrollContainer = document.getElementById('linearViewScroll');
+            const scrollLeft = scrollContainer.scrollLeft;
+            const visibleWidth = scrollContainer.clientWidth;
+            const startBp = Math.max(0, Math.floor(scrollLeft / pixelsPerBp) - 10);
+            const endBp = Math.min(totalLength, Math.ceil((scrollLeft + visibleWidth) / pixelsPerBp) + 10);
+
+            // Nucleotide row
+            let html = '<div class="seq-row" style="position: relative; width: ' + totalWidth + 'px; height: ' + rowHeight + 'px;">';
+            for (let i = startBp; i < endBp; i++) {
+                const nt = sequence[i] || '';
+                const x = i * pixelsPerBp;
+                const feature = regionFeatures.find(f => (i + 1) >= f.start && (i + 1) <= f.end);
+                const bg = feature ? ` background:${feature.color};` : ' background:#eef0f2;';
+                const color = feature ? ' color:#1a1a1a;' : ' color:#555;';
+                const title = feature ? ` title="${feature.qualifiers.label || feature.type}"` : '';
+                html += `<span class="seq-nt" style="position:absolute; left:${x}px; width:${charWidth}px; font-size:${fontSize}px; line-height:${rowHeight}px;${bg}${color}"${title}>${nt.toUpperCase()}</span>`;
+            }
+            html += '</div>';
+
+            // Position markers row
+            const posRowHeight = positionFontSize + 6;
+            html += '<div class="seq-row" style="position: relative; width: ' + totalWidth + 'px; height: ' + posRowHeight + 'px;">';
+            const markerStart = Math.floor(startBp / 10) * 10;
+            for (let pos = markerStart; pos <= endBp; pos += 10) {
+                if (pos === 0) continue;
+                const x = (pos - 1) * pixelsPerBp;
+                html += `<span style="position:absolute; left:${x}px; font-size:${positionFontSize}px; color:#888; font-weight:500; transform:translateX(-50%);">${pos}</span>`;
+            }
+            html += '</div>';
 
             seqView.innerHTML = html;
         }
 
-        function showFullSequence() {
-            if (!currentViewerVector) return;
-            document.getElementById('seqStart').value = 1;
-            document.getElementById('seqEnd').value = currentViewerVector.size;
-            updateSequenceView();
-        }
+        // Re-render visible sequence on scroll for performance
+        (function() {
+            let scrollTimer;
+            document.addEventListener('DOMContentLoaded', function() {
+                const scrollEl = document.getElementById('linearViewScroll');
+                if (scrollEl) {
+                    scrollEl.addEventListener('scroll', function() {
+                        if (!currentViewerVector) return;
+                        const zoom = parseInt(document.getElementById('linearZoom').value);
+                        if (zoom < 6) return;
+                        clearTimeout(scrollTimer);
+                        scrollTimer = setTimeout(updateSequenceView, 50);
+                    });
+                }
+            });
+        })();
 
         // Initialize vector list on page load
         document.addEventListener('DOMContentLoaded', function() {
