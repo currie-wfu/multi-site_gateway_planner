@@ -151,6 +151,24 @@
         .element-input.element-3 h3 { color: #F5A623; }
         .element-input.element-dest h3 { color: #9d7f37; }
 
+        .gateway-vector-select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 0.95em;
+            font-family: 'Inter', sans-serif;
+            background: white;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+
+        .gateway-vector-select:focus {
+            outline: none;
+            border-color: #9d7f37;
+            box-shadow: 0 0 0 3px rgba(157, 127, 55, 0.1);
+        }
+
         .pdonr-label {
             font-size: 1em;
             color: #888;
@@ -1071,8 +1089,13 @@
                         <h3>Destination Vector (pDEST)</h3>
                         <div class="pdonr-label">Upload pDEST vector with attR4 and attR3 sites</div>
                         <div style="margin: 10px 0;">
+                            <select id="selectDest" class="gateway-vector-select" onchange="loadGatewayVector('dest', this.value)">
+                                <option value="">-- Select from library --</option>
+                            </select>
+                        </div>
+                        <div style="margin: 10px 0;">
                             <input type="file" id="fileDest" accept=".gb,.gbk" style="display: none;">
-                            <button onclick="document.getElementById('fileDest').click()" type="button" style="width: 100%; padding: 8px;">Upload pDEST Vector (.gb)</button>
+                            <button onclick="document.getElementById('fileDest').click()" type="button" style="width: 100%; padding: 8px;">Or upload pDEST Vector (.gb)</button>
                         </div>
                         <div class="sequence-info" id="infoDest">No vector loaded</div>
                         <div class="error" id="errorDest"></div>
@@ -1081,10 +1104,15 @@
                     <div class="element-input element-5">
                         <h3>5' Element (Promoter)</h3>
                         <div class="pdonr-label">pDONR P4-P1R Entry Clone (attL4-insert-attR1) or raw sequence</div>
+                        <div style="margin: 10px 0;">
+                            <select id="select5" class="gateway-vector-select" onchange="loadGatewayVector('5', this.value)">
+                                <option value="">-- Select from library --</option>
+                            </select>
+                        </div>
                         <textarea id="seq5" placeholder="Enter DNA sequence or upload Entry clone..."></textarea>
                         <div style="margin: 10px 0;">
                             <input type="file" id="file5" accept=".gb,.gbk" style="display: none;">
-                            <button onclick="document.getElementById('file5').click()" type="button" style="width: 100%; padding: 8px;">Upload Entry Clone (.gb)</button>
+                            <button onclick="document.getElementById('file5').click()" type="button" style="width: 100%; padding: 8px;">Or upload Entry Clone (.gb)</button>
                         </div>
                         <div class="sequence-info" id="info5">Length: 0 bp <span id="source5"></span></div>
                         <div class="error" id="error5"></div>
@@ -1099,10 +1127,15 @@
                     <div class="element-input element-middle">
                         <h3>Middle Element (Gene of Interest)</h3>
                         <div class="pdonr-label">pDONR 221 Entry Clone (attL1-insert-attL2) or raw sequence</div>
+                        <div style="margin: 10px 0;">
+                            <select id="selectMiddle" class="gateway-vector-select" onchange="loadGatewayVector('middle', this.value)">
+                                <option value="">-- Select from library --</option>
+                            </select>
+                        </div>
                         <textarea id="seqMiddle" placeholder="Enter DNA sequence or upload Entry clone..."></textarea>
                         <div style="margin: 10px 0;">
                             <input type="file" id="fileMiddle" accept=".gb,.gbk" style="display: none;">
-                            <button onclick="document.getElementById('fileMiddle').click()" type="button" style="width: 100%; padding: 8px;">Upload Entry Clone (.gb)</button>
+                            <button onclick="document.getElementById('fileMiddle').click()" type="button" style="width: 100%; padding: 8px;">Or upload Entry Clone (.gb)</button>
                         </div>
                         <div class="sequence-info" id="infoMiddle">Length: 0 bp <span id="sourceMiddle"></span></div>
                         <div class="error" id="errorMiddle"></div>
@@ -1111,10 +1144,15 @@
                     <div class="element-input element-3">
                         <h3>3' Element (Terminator/Tag)</h3>
                         <div class="pdonr-label">pDONR P2R-P3 Entry Clone (attR2-insert-attL3) or raw sequence</div>
+                        <div style="margin: 10px 0;">
+                            <select id="select3" class="gateway-vector-select" onchange="loadGatewayVector('3', this.value)">
+                                <option value="">-- Select from library --</option>
+                            </select>
+                        </div>
                         <textarea id="seq3" placeholder="Enter DNA sequence or upload Entry clone..."></textarea>
                         <div style="margin: 10px 0;">
                             <input type="file" id="file3" accept=".gb,.gbk" style="display: none;">
-                            <button onclick="document.getElementById('file3').click()" type="button" style="width: 100%; padding: 8px;">Upload Entry Clone (.gb)</button>
+                            <button onclick="document.getElementById('file3').click()" type="button" style="width: 100%; padding: 8px;">Or upload Entry Clone (.gb)</button>
                         </div>
                         <div class="sequence-info" id="info3">Length: 0 bp <span id="source3"></span></div>
                         <div class="error" id="error3"></div>
@@ -3000,6 +3038,7 @@
                 const data = await response.json();
                 vectorList = data.vectors;
                 populateVectorDropdown();
+                populateGatewayDropdowns();
             } catch (error) {
                 console.log('Vector list not available:', error.message);
                 document.getElementById('vectorLoadStatus').innerHTML =
@@ -3028,6 +3067,76 @@
                     select.appendChild(optgroup);
                 }
             });
+        }
+
+        function populateGatewayDropdowns() {
+            const mapping = {
+                'dest': 'Destination',
+                '5': "5' Entry",
+                'middle': 'Middle Entry',
+                '3': "3' Entry"
+            };
+
+            Object.entries(mapping).forEach(([slot, type]) => {
+                const selectId = slot === 'dest' ? 'selectDest' :
+                                 slot === '5' ? 'select5' :
+                                 slot === 'middle' ? 'selectMiddle' : 'select3';
+                const select = document.getElementById(selectId);
+                if (!select) return;
+
+                select.innerHTML = '<option value="">-- Select from library --</option>';
+                const vectors = vectorList.filter(v => v.type === type);
+                vectors.forEach(v => {
+                    const option = document.createElement('option');
+                    option.value = v.file;
+                    option.textContent = v.name;
+                    option.title = v.description;
+                    select.appendChild(option);
+                });
+
+                // Hide dropdown if no vectors of this type
+                if (vectors.length === 0) {
+                    select.parentElement.style.display = 'none';
+                }
+            });
+        }
+
+        async function loadGatewayVector(slot, filename) {
+            if (!filename) return;
+
+            const infoId = slot === 'dest' ? 'infoDest' :
+                           slot === '5' ? 'info5' :
+                           slot === 'middle' ? 'infoMiddle' : 'info3';
+            const errorId = slot === 'dest' ? 'errorDest' :
+                            slot === '5' ? 'error5' :
+                            slot === 'middle' ? 'errorMiddle' : 'error3';
+
+            document.getElementById(infoId).innerHTML = '<span style="color: #9d7f37;">Loading...</span>';
+            document.getElementById(errorId).textContent = '';
+
+            try {
+                const response = await fetch('Gateway_vectors/' + encodeURIComponent(filename));
+                if (!response.ok) throw new Error('Could not load vector file');
+                const gbText = await response.text();
+
+                if (slot === 'dest') {
+                    destVectorData = parseDestVector(gbText);
+                    document.getElementById('infoDest').innerHTML =
+                        `Loaded: ${destVectorData.name} (${destVectorData.fullSequence.length} bp total, ` +
+                        `backbone: ${destVectorData.backbone5.length + destVectorData.backbone3.length} bp)`;
+                } else {
+                    const elementKey = slot;
+                    const result = parseEntryClone(gbText, elementKey);
+                    const seqId = slot === '5' ? 'seq5' : (slot === 'middle' ? 'seqMiddle' : 'seq3');
+                    document.getElementById(seqId).value = result.insertSequence;
+                    sequenceSources[elementKey] = 'entry';
+                    document.getElementById(infoId).innerHTML =
+                        `Length: ${result.insertSequence.length} bp <span class="source-badge entry">Entry Clone</span>`;
+                }
+            } catch (error) {
+                document.getElementById(errorId).textContent = error.message;
+                if (slot === 'dest') destVectorData = null;
+            }
         }
 
         async function loadSelectedVector() {
