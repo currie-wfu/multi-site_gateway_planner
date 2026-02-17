@@ -25,6 +25,18 @@
       "description": "Destination vector with Tol2 transposon arms"
     },
     {
+      "file": "currie-lab-sceitol2-pdest.gb",
+      "name": “Currie Lab pDEST-SceI/Tol2",
+      "type": "Destination",
+      "description": "Destination vector with flanking SceI Meganuclease / Tol2 transposon arms"
+    },
+    {
+      "file": "p5e_prrx1enh_bglobin.gb",
+      "name": “p5E-mPrrx1enh-bglobin",
+      "type": "5' Entry",
+      "description": "5' Entry clone with mouse Prrx1 enhancer/promoter with balobin intron"
+    },
+    {
       "file": "JDW_404_p5E-UASE1b.gb",
       "name": "p5E-UASE1b",
       "type": "5' Entry",
@@ -180,11 +192,5 @@
       "type": "3' Entry",
       "description": "3' Entry clone with H2A-mCherry and SV40 polyA"
     },
-    {
-      "file": "sequence-12211-e.gb",
-      "name": "sequence-12211-e",
-      "type": "Other",
-      "description": "Additional sequence"
-    }
   ]
 }

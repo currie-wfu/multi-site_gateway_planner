@@ -1181,7 +1181,7 @@
                         <p style="color: #999; text-align: center;">Final expression clone sequence will appear here</p>
                     </div>
 
-                    <h2>Translation (Longest ORF from Middle Element)</h2>
+                    <h2>Translation (Longest ORF in Insert)</h2>
                     <div id="translationDisplay" class="translation-display">
                         <p style="color: #999; text-align: center;">Translation will appear here after assembly</p>
                     </div>
@@ -2197,24 +2197,75 @@
             }
         }
 
-        function calculateFrameAdjustment(seq5, seqMiddle) {
-            const attB1Length = attBRecombinedSequences.attB1.length;
-            const totalBefore = seq5.length + attB1Length;
-            const remainder = totalBefore % 3;
+        // Choose padding bases that avoid stop codons and encode neutral amino acids
+        // (Gly, Ala, Val, Leu, Ile, Ser, Thr, Met) when combined with preceding context
+        function chooseSafePaddingBases(precedingSeq, needed) {
+            if (needed === 0) return '';
+            const neutralAAs = new Set(['G', 'A', 'V', 'L', 'I', 'S', 'T', 'M']);
+            const bases = ['G', 'C', 'A', 'T'];
 
-            if (remainder === 0) return '';
-            const needed = 3 - remainder;
-            return 'A'.repeat(needed);
+            if (needed === 1) {
+                // Codon formed: [prev2][prev1][padding]
+                const lastTwo = precedingSeq.slice(-2).toUpperCase();
+                // First pass: prefer neutral amino acids
+                for (const b of bases) {
+                    const aa = codonTable[lastTwo + b];
+                    if (aa && aa !== '*' && neutralAAs.has(aa)) return b;
+                }
+                // Fallback: any non-stop codon
+                for (const b of bases) {
+                    const aa = codonTable[lastTwo + b];
+                    if (aa && aa !== '*') return b;
+                }
+                return 'G';
+            }
+
+            if (needed === 2) {
+                // Codon formed: [prev1][pad1][pad2]
+                const lastOne = precedingSeq.slice(-1).toUpperCase();
+                // First pass: prefer neutral amino acids
+                for (const b1 of bases) {
+                    for (const b2 of bases) {
+                        const aa = codonTable[lastOne + b1 + b2];
+                        if (aa && aa !== '*' && neutralAAs.has(aa)) return b1 + b2;
+                    }
+                }
+                // Fallback: any non-stop codon
+                for (const b1 of bases) {
+                    for (const b2 of bases) {
+                        const aa = codonTable[lastOne + b1 + b2];
+                        if (aa && aa !== '*') return b1 + b2;
+                    }
+                }
+                return 'GC';
+            }
+
+            return '';
         }
 
-        function calculateFrame3Adjustment(seqMiddle, seq3) {
-            const attB2Length = attBRecombinedSequences.attB2.length;
-            const totalBefore = seqMiddle.length + attB2Length;
+        // placement: 'after_att' = bases go after the attB site (on downstream element's fwd primer)
+        //            'before_att' = bases go before the attB site (on upstream element's rev primer)
+        function calculateFrameAdjustment(seq5, seqMiddle, placement) {
+            const attB1 = attBRecombinedSequences.attB1;
+            const totalBefore = seq5.length + attB1.length;
             const remainder = totalBefore % 3;
 
             if (remainder === 0) return '';
             const needed = 3 - remainder;
-            return 'A'.repeat(needed);
+            // Preceding base context depends on where the padding is placed
+            const precedingSeq = (placement === 'before_att') ? seq5 : attB1;
+            return chooseSafePaddingBases(precedingSeq, needed);
+        }
+
+        function calculateFrame3Adjustment(seqMiddle, seq3, placement) {
+            const attB2 = attBRecombinedSequences.attB2;
+            const totalBefore = seqMiddle.length + attB2.length;
+            const remainder = totalBefore % 3;
+
+            if (remainder === 0) return '';
+            const needed = 3 - remainder;
+            const precedingSeq = (placement === 'before_att') ? seqMiddle : attB2;
+            return chooseSafePaddingBases(precedingSeq, needed);
         }
 
         function findLongestORF(sequence) {
@@ -2285,10 +2336,47 @@
                 return;
             }
 
-            const frame5nt = frame5 ? calculateFrameAdjustment(seq5, seqMiddle) : '';
-            const frame3nt = frame3 ? calculateFrame3Adjustment(seqMiddle, seq3) : '';
+            // Determine frame adjustment placement based on sequence sources
+            // Frame bases can only be added to raw (pasted) sequences, not entry clones
+            let frame5Placement = 'none';
+            let frame5Warning = '';
+            if (frame5) {
+                if (sequenceSources['middle'] === 'raw') {
+                    frame5Placement = 'after_att'; // on middle element's forward primer
+                } else if (sequenceSources['5'] === 'raw') {
+                    frame5Placement = 'before_att'; // on 5' element's reverse primer
+                } else {
+                    frame5Warning = 'Cannot adjust frame: both 5\' and middle elements are from Entry clones and cannot be modified. Use a raw sequence for at least one element.';
+                }
+            }
+
+            let frame3Placement = 'none';
+            let frame3Warning = '';
+            if (frame3) {
+                if (sequenceSources['3'] === 'raw') {
+                    frame3Placement = 'after_att'; // on 3' element's forward primer
+                } else if (sequenceSources['middle'] === 'raw') {
+                    frame3Placement = 'before_att'; // on middle element's reverse primer
+                } else {
+                    frame3Warning = 'Cannot adjust frame: both middle and 3\' elements are from Entry clones and cannot be modified. Use a raw sequence for at least one element.';
+                }
+            }
+
+            // Show warnings if frame adjustment is impossible
+            if (frame5Warning) {
+                document.getElementById('error5').textContent = frame5Warning;
+            }
+            if (frame3Warning) {
+                document.getElementById('error3').textContent = frame3Warning;
+            }
+
+            const frame5nt = (frame5Placement !== 'none') ? calculateFrameAdjustment(seq5, seqMiddle, frame5Placement) : '';
+            const frame3nt = (frame3Placement !== 'none') ? calculateFrame3Adjustment(seqMiddle, seq3, frame3Placement) : '';
 
             // Build the full expression clone sequence
+            // Frame bases are placed on whichever side has the raw sequence:
+            //   'after_att'  = after the attB site (before the downstream element)
+            //   'before_att' = before the attB site (after the upstream element)
             let fullSequence = '';
             let positions = {};
 
@@ -2309,13 +2397,20 @@
             fullSequence += seq5;
             positions.element5End = fullSequence.length;
 
+            // Add frame5 bases BEFORE attB1 if placed on 5' element's side
+            if (frame5nt && frame5Placement === 'before_att') {
+                positions.frame5Start = fullSequence.length;
+                fullSequence += frame5nt;
+                positions.frame5End = fullSequence.length;
+            }
+
             // Add attB1
             positions.attB1Start = fullSequence.length;
             fullSequence += attBRecombinedSequences.attB1;
             positions.attB1End = fullSequence.length;
 
-            // Add frame adjustment for 5' if needed
-            if (frame5nt) {
+            // Add frame5 bases AFTER attB1 if placed on middle element's side
+            if (frame5nt && frame5Placement === 'after_att') {
                 positions.frame5Start = fullSequence.length;
                 fullSequence += frame5nt;
                 positions.frame5End = fullSequence.length;
@@ -2326,13 +2421,20 @@
             fullSequence += seqMiddle;
             positions.middleEnd = fullSequence.length;
 
+            // Add frame3 bases BEFORE attB2 if placed on middle element's side
+            if (frame3nt && frame3Placement === 'before_att') {
+                positions.frame3Start = fullSequence.length;
+                fullSequence += frame3nt;
+                positions.frame3End = fullSequence.length;
+            }
+
             // Add attB2
             positions.attB2Start = fullSequence.length;
             fullSequence += attBRecombinedSequences.attB2;
             positions.attB2End = fullSequence.length;
 
-            // Add frame adjustment for 3' if needed
-            if (frame3nt) {
+            // Add frame3 bases AFTER attB2 if placed on 3' element's side
+            if (frame3nt && frame3Placement === 'after_att') {
                 positions.frame3Start = fullSequence.length;
                 fullSequence += frame3nt;
                 positions.frame3End = fullSequence.length;
@@ -2355,17 +2457,22 @@
                 positions.backbone3End = fullSequence.length;
             }
 
-            // Build inserted sequence (without backbone)
+            // Build inserted sequence (without backbone) - matches fullSequence assembly order
             let insertSequence = attBRecombinedSequences.attB4 + seq5 +
-                                 attBRecombinedSequences.attB1 + frame5nt + seqMiddle +
-                                 attBRecombinedSequences.attB2 + frame3nt + seq3 +
-                                 attBRecombinedSequences.attB3;
+                                 (frame5Placement === 'before_att' ? frame5nt : '') +
+                                 attBRecombinedSequences.attB1 +
+                                 (frame5Placement === 'after_att' ? frame5nt : '') +
+                                 seqMiddle +
+                                 (frame3Placement === 'before_att' ? frame3nt : '') +
+                                 attBRecombinedSequences.attB2 +
+                                 (frame3Placement === 'after_att' ? frame3nt : '') +
+                                 seq3 + attBRecombinedSequences.attB3;
 
-            // Find longest ORF in middle element
-            const middleORF = findLongestORF(seqMiddle);
+            // Find longest ORF in the full insert sequence (spans all elements)
+            const middleORF = findLongestORF(insertSequence);
 
             // Generate primers for raw sequences
-            const primers = generatePrimers(seq5, seqMiddle, seq3, frame5nt, frame3nt, frame5, frame3);
+            const primers = generatePrimers(seq5, seqMiddle, seq3, frame5nt, frame3nt, frame5, frame3, frame5Placement, frame3Placement);
 
             // Assemble features from all sources
             let assembledFeatures = [];
@@ -2436,6 +2543,10 @@
                 frame3,
                 frame5nt,
                 frame3nt,
+                frame5Placement,
+                frame3Placement,
+                frame5Warning,
+                frame3Warning,
                 primers,
                 sources: {...sequenceSources},
                 middleORF,
@@ -2454,7 +2565,7 @@
             drawVectorMap();
         }
 
-        function generatePrimers(seq5, seqMiddle, seq3, frame5nt, frame3nt, useFrame5, useFrame3) {
+        function generatePrimers(seq5, seqMiddle, seq3, frame5nt, frame3nt, useFrame5, useFrame3, frame5Placement, frame3Placement) {
             const primerBindingLength = 18;
             const primers = [];
 
@@ -2471,57 +2582,64 @@
                     pdonr: "pDONR P4-P1R"
                 });
 
+                // If frame5 bases are placed on the 5' element side (before attB1),
+                // include them in the 5' reverse primer
+                const frame5Rev = (frame5Placement === 'before_att' && frame5nt) ? reverseComplement(frame5nt) : '';
                 const geneSpecific5R = reverseComplement(seq5.substring(Math.max(0, seq5.length - primerBindingLength)));
                 primers.push({
                     name: "5' Element Reverse (attB1r)",
                     attb: attBPrimerSequences.attB1r,
-                    frame: '',
+                    frame: frame5Rev,
                     geneSpecific: geneSpecific5R,
-                    fullSequence: attBPrimerSequences.attB1r + geneSpecific5R,
+                    fullSequence: attBPrimerSequences.attB1r + frame5Rev + geneSpecific5R,
                     tm: calculateTm(geneSpecific5R),
-                    description: "For BP reaction with pDONR P4-P1R",
+                    description: "For BP reaction with pDONR P4-P1R" + (frame5Rev ? ` (includes ${frame5nt.length} nt frame adjustment, shown as reverse complement)` : ''),
                     pdonr: "pDONR P4-P1R"
                 });
             }
 
             if (sequenceSources['middle'] === 'raw') {
-                const frameNt = useFrame5 ? frame5nt : '';
+                // frame5 bases go on middle's forward primer only if placement is 'after_att'
+                const frameFwd = (frame5Placement === 'after_att' && frame5nt) ? frame5nt : '';
                 const geneSpecificMF = seqMiddle.substring(0, Math.min(primerBindingLength, seqMiddle.length));
                 primers.push({
                     name: "Middle Element Forward (attB1)",
                     attb: attBPrimerSequences.attB1,
-                    frame: frameNt,
+                    frame: frameFwd,
                     geneSpecific: geneSpecificMF,
-                    fullSequence: attBPrimerSequences.attB1 + frameNt + geneSpecificMF,
+                    fullSequence: attBPrimerSequences.attB1 + frameFwd + geneSpecificMF,
                     tm: calculateTm(geneSpecificMF),
-                    description: "For BP reaction with pDONR 221" + (frameNt ? ` (includes ${frameNt.length} nt frame adjustment)` : ''),
+                    description: "For BP reaction with pDONR 221" + (frameFwd ? ` (includes ${frameFwd.length} nt frame adjustment)` : ''),
                     pdonr: "pDONR 221"
                 });
 
+                // frame3 bases go on middle's reverse primer only if placement is 'before_att'
+                const frame3Rev = (frame3Placement === 'before_att' && frame3nt) ? reverseComplement(frame3nt) : '';
                 const geneSpecificMR = reverseComplement(seqMiddle.substring(Math.max(0, seqMiddle.length - primerBindingLength)));
                 primers.push({
                     name: "Middle Element Reverse (attB2)",
                     attb: attBPrimerSequences.attB2,
-                    frame: '',
+                    frame: frame3Rev,
                     geneSpecific: geneSpecificMR,
-                    fullSequence: attBPrimerSequences.attB2 + geneSpecificMR,
+                    fullSequence: attBPrimerSequences.attB2 + frame3Rev + geneSpecificMR,
                     tm: calculateTm(geneSpecificMR),
-                    description: "For BP reaction with pDONR 221",
+                    description: "For BP reaction with pDONR 221" + (frame3Rev ? ` (includes ${frame3nt.length} nt frame adjustment, shown as reverse complement)` : ''),
                     pdonr: "pDONR 221"
                 });
             }
 
             if (sequenceSources['3'] === 'raw') {
-                const frameNt = useFrame3 ? frame3nt : '';
+                // frame3 bases go on 3' forward primer only if placement is 'after_att'
+                const frameFwd = (frame3Placement === 'after_att' && frame3nt) ? frame3nt : '';
                 const geneSpecific3F = seq3.substring(0, Math.min(primerBindingLength, seq3.length));
                 primers.push({
                     name: "3' Element Forward (attB2r)",
                     attb: attBPrimerSequences.attB2r,
-                    frame: frameNt,
+                    frame: frameFwd,
                     geneSpecific: geneSpecific3F,
-                    fullSequence: attBPrimerSequences.attB2r + frameNt + geneSpecific3F,
+                    fullSequence: attBPrimerSequences.attB2r + frameFwd + geneSpecific3F,
                     tm: calculateTm(geneSpecific3F),
-                    description: "For BP reaction with pDONR P2R-P3" + (frameNt ? ` (includes ${frameNt.length} nt frame adjustment)` : ''),
+                    description: "For BP reaction with pDONR P2R-P3" + (frameFwd ? ` (includes ${frameFwd.length} nt frame adjustment)` : ''),
                     pdonr: "pDONR P2R-P3"
                 });
 
@@ -2585,6 +2703,18 @@
 
             html += '</div>';
 
+            // Show frame adjustment warnings
+            if (data.frame5Warning) {
+                html += '<div style="margin-top: 8px; padding: 8px; background: #fff3e0; border-left: 3px solid #ff9800; color: #e65100; font-size: 0.9em;">';
+                html += data.frame5Warning;
+                html += '</div>';
+            }
+            if (data.frame3Warning) {
+                html += '<div style="margin-top: 8px; padding: 8px; background: #fff3e0; border-left: 3px solid #ff9800; color: #e65100; font-size: 0.9em;">';
+                html += data.frame3Warning;
+                html += '</div>';
+            }
+
             html += '<div class="workflow-arrow">v</div>';
 
             html += '<div style="margin-bottom: 15px;">';
@@ -2608,13 +2738,19 @@
             }
             html += '<span style="background: #ffcdd2; padding: 2px 4px;">attB4</span>';
             html += '<span style="background: #bbdefb; padding: 2px 4px;">5\' element</span>';
+            if (data.frame5nt && data.frame5Placement === 'before_att') {
+                html += '<span style="background: #b2dfdb; padding: 2px 4px;">+' + data.frame5nt.length + 'nt</span>';
+            }
             html += '<span style="background: #f8bbd9; padding: 2px 4px;">attB1</span>';
-            if (data.frame5 && data.frame5nt) {
+            if (data.frame5nt && data.frame5Placement === 'after_att') {
                 html += '<span style="background: #b2dfdb; padding: 2px 4px;">+' + data.frame5nt.length + 'nt</span>';
             }
             html += '<span style="background: #c8e6c9; padding: 2px 4px;">Middle</span>';
+            if (data.frame3nt && data.frame3Placement === 'before_att') {
+                html += '<span style="background: #b2dfdb; padding: 2px 4px;">+' + data.frame3nt.length + 'nt</span>';
+            }
             html += '<span style="background: #ffe0b2; padding: 2px 4px;">attB2</span>';
-            if (data.frame3 && data.frame3nt) {
+            if (data.frame3nt && data.frame3Placement === 'after_att') {
                 html += '<span style="background: #b2dfdb; padding: 2px 4px;">+' + data.frame3nt.length + 'nt</span>';
             }
             html += '<span style="background: #fff9c4; padding: 2px 4px;">3\' element</span>';
@@ -2642,16 +2778,30 @@
 
             html += `<span class="seq-attb4">${data.fullSequence.substring(pos.attB4Start, pos.attB4End)}</span>`;
             html += `<span class="seq-5element">${data.fullSequence.substring(pos.element5Start, pos.element5End)}</span>`;
+
+            // frame5 bases before attB1 (on 5' element side)
+            if (data.frame5nt && data.frame5Placement === 'before_att' && pos.frame5End > pos.frame5Start) {
+                html += `<span class="seq-frame">${data.fullSequence.substring(pos.frame5Start, pos.frame5End)}</span>`;
+            }
+
             html += `<span class="seq-attb1">${data.fullSequence.substring(pos.attB1Start, pos.attB1End)}</span>`;
 
-            if (data.frame5nt && pos.frame5End > pos.frame5Start) {
+            // frame5 bases after attB1 (on middle element side)
+            if (data.frame5nt && data.frame5Placement === 'after_att' && pos.frame5End > pos.frame5Start) {
                 html += `<span class="seq-frame">${data.fullSequence.substring(pos.frame5Start, pos.frame5End)}</span>`;
             }
 
             html += `<span class="seq-middle">${data.fullSequence.substring(pos.middleStart, pos.middleEnd)}</span>`;
+
+            // frame3 bases before attB2 (on middle element side)
+            if (data.frame3nt && data.frame3Placement === 'before_att' && pos.frame3End > pos.frame3Start) {
+                html += `<span class="seq-frame">${data.fullSequence.substring(pos.frame3Start, pos.frame3End)}</span>`;
+            }
+
             html += `<span class="seq-attb2">${data.fullSequence.substring(pos.attB2Start, pos.attB2End)}</span>`;
 
-            if (data.frame3nt && pos.frame3End > pos.frame3Start) {
+            // frame3 bases after attB2 (on 3' element side)
+            if (data.frame3nt && data.frame3Placement === 'after_att' && pos.frame3End > pos.frame3Start) {
                 html += `<span class="seq-frame">${data.fullSequence.substring(pos.frame3Start, pos.frame3End)}</span>`;
             }
 
@@ -2670,13 +2820,41 @@
             const data = assembledData;
 
             if (!data.middleORF || data.middleORF.length === 0) {
-                display.innerHTML = '<p style="color: #999;">No ORF found in middle element</p>';
+                display.innerHTML = '<p style="color: #999;">No ORF found in insert sequence</p>';
                 return;
             }
 
             const orf = data.middleORF;
-            const orfSeq = data.seqMiddle.substring(orf.start, orf.end);
+            const orfSeq = data.insertSequence.substring(orf.start, orf.end);
             const protein = translateSequence(orfSeq);
+
+            // Build element boundaries within the insert sequence
+            // insertSequence starts at attB4Start in fullSequence
+            const offset = data.positions.attB4Start;
+            const pos = data.positions;
+            const boundaries = [
+                { start: pos.attB4Start - offset, end: pos.attB4End - offset, cls: 'aa-from-attb' },
+                { start: pos.element5Start - offset, end: pos.element5End - offset, cls: 'aa-from-5' },
+                { start: pos.attB1Start - offset, end: pos.attB1End - offset, cls: 'aa-from-attb' },
+                { start: pos.middleStart - offset, end: pos.middleEnd - offset, cls: 'aa-from-middle' },
+                { start: pos.attB2Start - offset, end: pos.attB2End - offset, cls: 'aa-from-attb' },
+                { start: pos.element3Start - offset, end: pos.element3End - offset, cls: 'aa-from-3' },
+                { start: pos.attB3Start - offset, end: pos.attB3End - offset, cls: 'aa-from-attb' }
+            ];
+            // Add frame adjustment regions if they exist
+            if (data.frame5nt && pos.frame5Start !== undefined) {
+                boundaries.push({ start: pos.frame5Start - offset, end: pos.frame5End - offset, cls: 'aa-from-frame' });
+            }
+            if (data.frame3nt && pos.frame3Start !== undefined) {
+                boundaries.push({ start: pos.frame3Start - offset, end: pos.frame3End - offset, cls: 'aa-from-frame' });
+            }
+
+            function getElementClass(insertPos) {
+                for (const b of boundaries) {
+                    if (insertPos >= b.start && insertPos < b.end) return b.cls;
+                }
+                return 'aa-from-middle';
+            }
 
             let html = '<div class="translation-frame">';
             html += `<div class="frame-label">Longest ORF (Frame +${orf.frame + 1}): ${orf.length} bp, ${protein.length} aa</div>`;
@@ -2684,12 +2862,14 @@
 
             for (let i = 0; i < protein.length; i++) {
                 const aa = protein[i];
+                const codonPos = orf.start + i * 3; // position in insert sequence
                 if (aa === 'M' && i === 0) {
                     html += `<span class="start-codon">${aa}</span>`;
                 } else if (aa === '*') {
                     html += `<span class="stop-codon">${aa}</span>`;
                 } else {
-                    html += `<span class="aa-from-middle">${aa}</span>`;
+                    const cls = getElementClass(codonPos);
+                    html += `<span class="${cls}">${aa}</span>`;
                 }
             }
 
@@ -2968,10 +3148,18 @@
             report += 'FRAME ADJUSTMENTS\n';
             report += '-'.repeat(60) + '\n';
             report += `5' in frame with middle: ${data.frame5 ? 'Yes' : 'No'}`;
-            if (data.frame5 && data.frame5nt) report += ` (+${data.frame5nt.length} nt: ${data.frame5nt})`;
+            if (data.frame5 && data.frame5nt) {
+                const side5 = data.frame5Placement === 'before_att' ? "on 5' element (before attB1)" : "on middle element (after attB1)";
+                report += ` (+${data.frame5nt.length} nt: ${data.frame5nt}, placed ${side5})`;
+            }
+            if (data.frame5Warning) report += ` [WARNING: ${data.frame5Warning}]`;
             report += '\n';
             report += `3' in frame with middle: ${data.frame3 ? 'Yes' : 'No'}`;
-            if (data.frame3 && data.frame3nt) report += ` (+${data.frame3nt.length} nt: ${data.frame3nt})`;
+            if (data.frame3 && data.frame3nt) {
+                const side3 = data.frame3Placement === 'before_att' ? "on middle element (before attB2)" : "on 3' element (after attB2)";
+                report += ` (+${data.frame3nt.length} nt: ${data.frame3nt}, placed ${side3})`;
+            }
+            if (data.frame3Warning) report += ` [WARNING: ${data.frame3Warning}]`;
             report += '\n\n';
 
             report += 'ASSEMBLY STATISTICS\n';
