@@ -1680,11 +1680,21 @@
         };
 
         // Recombined attB sites in the final Expression clone after LR reaction
+        // attB4, attB1: 21 bp (7+7+7) sites on the forward strand of the expression vector.
+        //   attB4: B-arm-left (CAACTTT from pDEST attR4) + overlap (GTATAGA) + B-arm-right (AAAGTTG from p5E attL4)
+        //   attB1: B-arm-left (CAAGTTT from p5E attR1)  + overlap (GTACAAA) + B-arm-right (AAAGCAG from pME attL1)
+        //          + 3-bp primer junction (GCT) from standard attB1 primer (GGGGACAAGTTTGTACAAAAAAGCAGGCT).
+        //          This GCT appears between attB1 and the insert in the expression vector. Total: 24 bp.
+        // attB2, attB3: appear on complement strand, stored as RC (forward-strand representation):
+        //   attB2: conventional 5'→3' = CCACTTTGTACAAGAAAGCTG → RC = CAGCTTTCTTGTACAAAGTGG
+        //   attB3: conventional 5'→3' = CAACTATGTATAATAAAGTTG → RC = CAACTTTATTATACATAGTTG
+        // Verified against tgfr1_expression_vector.gbk (ApE Gateway tool):
+        //   attB4:713-733, attB1:3363-3386, attB2:complement(4977-4997), attB3:complement(6367-6387)
         const attBRecombinedSequences = {
-            attB4: 'ACAACTTTGTATAGAAAAGTTG',
-            attB1: 'ACAAGTTTGTACAAAAAAGCAGGCT',
-            attB2: 'ACCACTTTGTACAAGAAAGCTGGGT',
-            attB3: 'ACAACTTTGTATAATAAAGTTG'
+            attB4: 'CAACTTTGTATAGAAAAGTTG',
+            attB1: 'CAAGTTTGTACAAAAAAGCAGGCT',
+            attB2: 'CAGCTTTCTTGTACAAAGTGG',
+            attB3: 'CAACTTTATTATACATAGTTG'
         };
 
         // Codon table
@@ -1728,9 +1738,11 @@
                     .replace(/\s+/g, '')
                     .toUpperCase();
 
+                // Primary marker starts with C (not T) so backbone5 correctly includes
+                // the flanking T at pDEST position 712 (first base of the attR4 annotation)
                 const attR4StartMarkers = [
-                    'TCAACTTTGTATAGAAAAGTTG',
                     'CAACTTTGTATAGAAAAGTTG',
+                    'TCAACTTTGTATAGAAAAGTTG',
                     'AACTTTGTATAGAAAAGTTG',
                     'CTTTGTATAGAAAAGTTG'
                 ];
@@ -1990,9 +2002,6 @@
                             'GTACAAAAAAGCAGGCT'
                         ],
                         endMarkers: [
-                            'TCCCAGCTTTCTTGTACAAAGTTGGC',
-                            'CCCAGCTTTCTTGTACAAAGTTGGC',
-                            'CCAGCTTTCTTGTACAAAGTTGGC',
                             'CAGCTTTCTTGTACAAAGTTGGC',
                             'AGCTTTCTTGTACAAAGTTGGC'
                         ]
@@ -2008,7 +2017,6 @@
                             'TGTACAAAGTGG'
                         ],
                         endMarkers: [
-                            'ACAACTTTATTATACAAAGTTG',
                             'CAACTTTATTATACAAAGTTG',
                             'ACTTTATTATACAAAGTTG',
                             'TTTATTATACAAAGTTG',
