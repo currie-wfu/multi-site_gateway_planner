@@ -1686,14 +1686,16 @@
         //          + 3-bp primer junction (GCT) from standard attB1 primer (GGGGACAAGTTTGTACAAAAAAGCAGGCT).
         //          This GCT appears between attB1 and the insert in the expression vector. Total: 24 bp.
         // attB2, attB3: appear on complement strand, stored as RC (forward-strand representation):
-        //   attB2: conventional 5'→3' = CCACTTTGTACAAGAAAGCTG → RC = CAGCTTTCTTGTACAAAGTGG
+        //   attB2: 21-bp core = CCACTTTGTACAAGAAAGCTG → RC = CAGCTTTCTTGTACAAAGTGG
+        //          + 3-bp primer junction ACC (RC of GGT, positions 27-29 of attB2 primer GGGGACCACTTTGTACAAGAAAGCTGGGT).
+        //          This ACC appears between the middle insert and the attB2 core in the expression vector. Total: 24 bp.
         //   attB3: conventional 5'→3' = CAACTATGTATAATAAAGTTG → RC = CAACTTTATTATACATAGTTG
         // Verified against tgfr1_expression_vector.gbk (ApE Gateway tool):
-        //   attB4:713-733, attB1:3363-3386, attB2:complement(4977-4997), attB3:complement(6367-6387)
+        //   attB4:713-733, attB1:3363-3386, attB2:complement(4974-4997), attB3:complement(6367-6387)
         const attBRecombinedSequences = {
             attB4: 'CAACTTTGTATAGAAAAGTTG',
             attB1: 'CAAGTTTGTACAAAAAAGCAGGCT',
-            attB2: 'CAGCTTTCTTGTACAAAGTGG',
+            attB2: 'ACCCAGCTTTCTTGTACAAAGTGG',
             attB3: 'CAACTTTATTATACATAGTTG'
         };
 
@@ -2002,8 +2004,9 @@
                             'GTACAAAAAAGCAGGCT'
                         ],
                         endMarkers: [
-                            'CAGCTTTCTTGTACAAAGTTGGC',
-                            'AGCTTTCTTGTACAAAGTTGGC'
+                            'ACCCAGCTTTCTTGTACAAAGTTGGC', // includes ACC junction (RC of GGT from attB2 primer pos 27-29)
+                            'CAGCTTTCTTGTACAAAGTTGGC',    // fallback for entry clones without GGT junction
+                            'AGCTTTCTTGTACAAAGTTGGC'      // last-resort fallback
                         ]
                     },
                     '3': {
@@ -2255,7 +2258,12 @@
         //            'before_att' = bases go before the attB site (on upstream element's rev primer)
         function calculateFrameAdjustment(seq5, seqMiddle, placement) {
             const attB1 = attBRecombinedSequences.attB1;
-            const totalBefore = seq5.length + attB1.length;
+            // Account for the ORF start offset within the middle element.
+            // If the ORF doesn't begin at position 0 of seqMiddle, those leading
+            // bases are non-coding and should not affect the frame calculation.
+            const middleORF = findLongestORF(seqMiddle);
+            const orfOffset = (middleORF.length > 0) ? middleORF.start : 0;
+            const totalBefore = seq5.length + attB1.length + orfOffset;
             const remainder = totalBefore % 3;
 
             if (remainder === 0) return '';
@@ -2267,7 +2275,12 @@
 
         function calculateFrame3Adjustment(seqMiddle, seq3, placement) {
             const attB2 = attBRecombinedSequences.attB2;
-            const totalBefore = seqMiddle.length + attB2.length;
+            // Count only from the ORF start to the end of seqMiddle.
+            // If the ORF doesn't begin at position 0, the leading non-coding
+            // bases must be excluded or the frame calculation will be wrong.
+            const middleORF = findLongestORF(seqMiddle);
+            const orfOffset = (middleORF.length > 0) ? middleORF.start : 0;
+            const totalBefore = (seqMiddle.length - orfOffset) + attB2.length;
             const remainder = totalBefore % 3;
 
             if (remainder === 0) return '';
