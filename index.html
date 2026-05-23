@@ -1053,6 +1053,84 @@
             padding: 40px;
             color: #666;
         }
+
+        /* ========== ENTRY VECTOR GENERATION ========== */
+        .entry-gen-section {
+            margin-top: 8px;
+            padding: 10px 12px;
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 4px;
+        }
+
+        .entry-gen-section > label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            font-size: 0.9em;
+            color: #166534;
+            font-weight: 600;
+        }
+
+        .entry-gen-section input[type="checkbox"] {
+            margin-right: 8px;
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+            accent-color: #16a34a;
+        }
+
+        .entry-name-field {
+            margin-top: 8px;
+            display: none;
+        }
+
+        .entry-name-field label {
+            display: block;
+            font-size: 0.82em;
+            color: #555;
+            margin-bottom: 3px;
+            font-weight: 500;
+        }
+
+        .entry-name-field input[type="text"] {
+            width: 100%;
+            padding: 5px 8px;
+            border: 1px solid #bbf7d0;
+            border-radius: 4px;
+            font-size: 0.88em;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .entry-name-field input[type="text"]:focus {
+            outline: none;
+            border-color: #16a34a;
+            box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.1);
+        }
+
+        .entry-vector-downloads {
+            border-top: 1px solid #eee;
+            padding-top: 10px;
+            margin-top: 10px;
+        }
+
+        .entry-vector-downloads-label {
+            font-size: 0.85em;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 6px;
+        }
+
+        .entry-dl-btn {
+            background: #16a34a;
+            width: 100%;
+            margin-bottom: 6px;
+            text-align: left;
+        }
+
+        .entry-dl-btn:hover {
+            background: #15803d;
+        }
     </style>
 </head>
 <body>
@@ -1122,6 +1200,16 @@
                                 <span>Keep in frame with middle element</span>
                             </label>
                         </div>
+                        <div class="entry-gen-section" id="entryGen5Section">
+                            <label>
+                                <input type="checkbox" id="genEntry5" onchange="toggleEntryName('5')">
+                                <span>Generate p5E Entry vector GenBank</span>
+                            </label>
+                            <div class="entry-name-field" id="entryName5Field">
+                                <label for="entryName5">Insert label:</label>
+                                <input type="text" id="entryName5" placeholder="e.g., MyPromoter">
+                            </div>
+                        </div>
                     </div>
 
                     <div class="element-input element-middle">
@@ -1139,6 +1227,16 @@
                         </div>
                         <div class="sequence-info" id="infoMiddle">Length: 0 bp <span id="sourceMiddle"></span></div>
                         <div class="error" id="errorMiddle"></div>
+                        <div class="entry-gen-section" id="entryGenMiddleSection">
+                            <label>
+                                <input type="checkbox" id="genEntryMiddle" onchange="toggleEntryName('middle')">
+                                <span>Generate pME Entry vector GenBank</span>
+                            </label>
+                            <div class="entry-name-field" id="entryNameMiddleField">
+                                <label for="entryNameMiddle">Insert label:</label>
+                                <input type="text" id="entryNameMiddle" placeholder="e.g., MyGene-GFP">
+                            </div>
+                        </div>
                     </div>
 
                     <div class="element-input element-3">
@@ -1161,6 +1259,16 @@
                                 <input type="checkbox" id="frame3">
                                 <span>Keep in frame with middle element</span>
                             </label>
+                        </div>
+                        <div class="entry-gen-section" id="entryGen3Section">
+                            <label>
+                                <input type="checkbox" id="genEntry3" onchange="toggleEntryName('3')">
+                                <span>Generate p3E Entry vector GenBank</span>
+                            </label>
+                            <div class="entry-name-field" id="entryName3Field">
+                                <label for="entryName3">Insert label:</label>
+                                <input type="text" id="entryName3" placeholder="e.g., WPRE-SV40pA">
+                            </div>
                         </div>
                     </div>
 
@@ -1233,6 +1341,10 @@
                         <button onclick="exportPrimers()">Download Primers (CSV)</button>
                         <button onclick="exportReport()">Download Report (TXT)</button>
                     </div>
+                    <div id="entryVectorDownloads" class="entry-vector-downloads" style="display: none;">
+                        <div class="entry-vector-downloads-label">Entry Vector GenBanks</div>
+                        <div id="entryVectorDownloadButtons"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1280,14 +1392,19 @@
                     <button onclick="calculateBP()">Calculate BP Reaction</button>
 
                     <div id="bp-results" style="display: none;" class="results">
-                        <h3>BP Reaction Components (10 ul total)</h3>
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+                            <h3 style="margin: 0;" id="bp-results-title">BP Reaction Components (10 µl total)</h3>
+                            <label style="display: flex; align-items: center; gap: 6px; font-size: 0.85em; color: #666; cursor: pointer; white-space: nowrap;">
+                                <input type="checkbox" id="bp-half-scale" onchange="updateBPScale()"> Scale to 5 µl
+                            </label>
+                        </div>
                         <div class="result-item">
                             <span class="result-label">attB PCR Product</span>
                             <span class="result-value" id="bp-pcr-volume">-</span>
                         </div>
                         <div class="result-item">
-                            <span class="result-label">pDONR Vector (150 ng/ul)</span>
-                            <span class="result-value">1 ul</span>
+                            <span class="result-label">pDONR Vector</span>
+                            <span class="result-value" id="bp-donor-volume">-</span>
                         </div>
                         <div class="result-item">
                             <span class="result-label">TE Buffer, pH 8.0</span>
@@ -1295,14 +1412,14 @@
                         </div>
                         <div class="result-item">
                             <span class="result-label">BP Clonase II enzyme mix</span>
-                            <span class="result-value">2 ul</span>
+                            <span class="result-value" id="bp-enzyme-volume">-</span>
                         </div>
                         <div class="warning">
                             <div class="warning-title">Important Guidelines</div>
-                            <small>- Total DNA should not exceed 500 ng in 10 ul reaction<br>
+                            <small>- Total DNA should not exceed 500 ng in 10 µl reaction<br>
                             - For PCR products >= 5 kb, incubate overnight<br>
-                            - Incubate at 25C for 1 hour (or up to 18 hours)<br>
-                            - Add 1 ul Proteinase K after incubation, incubate 37C for 10 min</small>
+                            - Incubate at 25°C for 1 hour (or up to 18 hours)<br>
+                            - Add 1 µl Proteinase K after incubation, incubate 37°C for 10 min</small>
                         </div>
                     </div>
                 </div>
@@ -1341,13 +1458,27 @@
                             <input type="number" id="lr-entry-fmoles" value="10" min="1" step="1">
                             <span class="input-addon">fmoles</span>
                         </div>
-                        <small style="color: #666; display: block; margin-top: 5px;">Recommended: 10 fmoles each</small>
+                        <small style="color: #666; display: block; margin-top: 5px;">Recommended: 10 fmoles each (some protocols use 20 fmoles)</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Destination Vector Size (bp)</label>
+                        <div class="input-group">
+                            <input type="number" id="lr-dest-size" placeholder="e.g., 4555" min="1">
+                            <span class="input-addon">bp</span>
+                        </div>
+                        <small style="color: #666; display: block; margin-top: 5px;">20 fmoles used in reaction (per manual)</small>
                     </div>
 
                     <button onclick="calculateLR()">Calculate LR Reaction</button>
 
                     <div id="lr-results" style="display: none;" class="results">
-                        <h3>LR Reaction Components (10 ul total)</h3>
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+                            <h3 style="margin: 0;" id="lr-results-title">LR Reaction Components (10 µl total)</h3>
+                            <label style="display: flex; align-items: center; gap: 6px; font-size: 0.85em; color: #666; cursor: pointer; white-space: nowrap;">
+                                <input type="checkbox" id="lr-half-scale" onchange="updateLRScale()"> Scale to 5 µl
+                            </label>
+                        </div>
                         <div class="result-item">
                             <span class="result-label">Entry Clone 1 (attL4-attR1)</span>
                             <span class="result-value" id="lr-entry1-volume">-</span>
@@ -1361,7 +1492,7 @@
                             <span class="result-value" id="lr-entry3-volume">-</span>
                         </div>
                         <div class="result-item">
-                            <span class="result-label">pDEST R4-R3 Vector II (150 ng/ul)</span>
+                            <span class="result-label">Destination Vector (20 fmoles)</span>
                             <span class="result-value" id="lr-dest-volume">-</span>
                         </div>
                         <div class="result-item">
@@ -1370,13 +1501,14 @@
                         </div>
                         <div class="result-item">
                             <span class="result-label">LR Clonase II Plus enzyme mix</span>
-                            <span class="result-value">2 ul</span>
+                            <span class="result-value" id="lr-enzyme-volume">-</span>
                         </div>
+                        <div id="lr-fmoles-warning" style="display: none; background: #fff3cd; border: 1px solid #ffc107; border-radius: 4px; padding: 8px 12px; margin-bottom: 8px; font-size: 0.85em; color: #856404;"></div>
                         <div class="warning">
                             <div class="warning-title">Important Guidelines</div>
-                            <small>- Total DNA should not exceed 60 fmoles in 10 ul reaction<br>
-                            - Incubate at 25C for 16 hours (overnight)<br>
-                            - Add 1 ul Proteinase K after incubation, incubate 37C for 10 min<br>
+                            <small>- Recommended: 10 fmoles per Entry clone, 20 fmoles Destination vector<br>
+                            - Incubate at 25°C for 16 hours (overnight)<br>
+                            - Add 1 µl Proteinase K after incubation, incubate 37°C for 10 min<br>
                             - Use LR Clonase II Plus (not LR Clonase or LR Clonase II)</small>
                         </div>
                     </div>
@@ -1580,9 +1712,17 @@
             return fmoles * basePairs * 660 / 1000000;
         }
 
+        // Approximate sizes of the three pDONR vectors (bp), from their GenBank files
+        const PDONR_SIZES = {
+            'p4p1r': 4777,  // pDONR P4-P1R
+            '221':   4761,  // pDONR 221
+            'p2rp3': 4773   // pDONR P2R-P3
+        };
+
         function calculateBP() {
-            const pcrSize = parseFloat(document.getElementById('bp-pcr-size').value);
-            const fmoles = parseFloat(document.getElementById('bp-fmoles').value);
+            const pcrSize  = parseFloat(document.getElementById('bp-pcr-size').value);
+            const fmoles   = parseFloat(document.getElementById('bp-fmoles').value);
+            const donorType = document.getElementById('bp-donor-type').value;
 
             if (!pcrSize || !fmoles) {
                 alert('Please enter both PCR product size and desired amount');
@@ -1595,39 +1735,72 @@
                 }
             }
 
-            const pcrNg = fmolesToNg(fmoles, pcrSize);
+            const pcrNg   = fmolesToNg(fmoles, pcrSize);
+            const donorNg = fmolesToNg(fmoles, PDONR_SIZES[donorType]);
 
             if (pcrSize >= 4000 && pcrNg > 250) {
                 alert('Warning: For large PCR products (>=4 kb), do not exceed 250 ng.\nCalculated amount: ' + pcrNg.toFixed(2) + ' ng');
                 return;
             }
 
-            const donorNg = 150;
             const totalDna = pcrNg + donorNg;
             if (totalDna > 500) {
                 alert('Warning: Total DNA (' + totalDna.toFixed(2) + ' ng) exceeds 500 ng limit.\nPlease reduce the amount of PCR product.');
                 return;
             }
 
-            const pcrVolume = pcrNg.toFixed(2) + ' ng (1-7 ul)';
-            const teVolume = 'to 8 ul';
+            // Store values on the results element so the scale toggle can re-render without recalculating
+            const resultsEl = document.getElementById('bp-results');
+            resultsEl.dataset.pcrNg   = pcrNg.toFixed(2);
+            resultsEl.dataset.donorNg = donorNg.toFixed(2);
 
-            document.getElementById('bp-pcr-volume').textContent = pcrVolume;
-            document.getElementById('bp-te-volume').textContent = teVolume;
-            document.getElementById('bp-results').style.display = 'block';
+            // Reset scale toggle and render full 10 µl layout
+            document.getElementById('bp-half-scale').checked = false;
+            renderBPResults(false);
 
-            document.getElementById('bp-results').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            resultsEl.style.display = 'block';
+            resultsEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function updateBPScale() {
+            const halfScale = document.getElementById('bp-half-scale').checked;
+            renderBPResults(halfScale);
+        }
+
+        function renderBPResults(halfScale) {
+            const resultsEl = document.getElementById('bp-results');
+            const pcrNg   = parseFloat(resultsEl.dataset.pcrNg);
+            const donorNg = parseFloat(resultsEl.dataset.donorNg);
+
+            document.getElementById('bp-results-title').textContent =
+                halfScale ? 'BP Reaction Components (5 µl total)' : 'BP Reaction Components (10 µl total)';
+
+            document.getElementById('bp-pcr-volume').textContent   = pcrNg.toFixed(2) + ' ng';
+            document.getElementById('bp-donor-volume').textContent = donorNg.toFixed(2) + ' ng';
+            document.getElementById('bp-te-volume').textContent    = halfScale ? 'to 4 µl' : 'to 8 µl';
+            document.getElementById('bp-enzyme-volume').textContent = halfScale ? '1 µl' : '2 µl';
         }
 
         function calculateLR() {
-            const entry1Size = parseFloat(document.getElementById('lr-entry1-size').value);
-            const entry2Size = parseFloat(document.getElementById('lr-entry2-size').value);
-            const entry3Size = parseFloat(document.getElementById('lr-entry3-size').value);
+            const entry1Size  = parseFloat(document.getElementById('lr-entry1-size').value);
+            const entry2Size  = parseFloat(document.getElementById('lr-entry2-size').value);
+            const entry3Size  = parseFloat(document.getElementById('lr-entry3-size').value);
             const entryFmoles = parseFloat(document.getElementById('lr-entry-fmoles').value);
+            const destSize    = parseFloat(document.getElementById('lr-dest-size').value);
 
-            if (!entry1Size || !entry2Size || !entry3Size || !entryFmoles) {
-                alert('Please enter all entry clone sizes and desired amount');
+            if (!entry1Size || !entry2Size || !entry3Size || !entryFmoles || !destSize) {
+                alert('Please enter all entry clone sizes, destination vector size, and desired amount');
                 return;
+            }
+
+            // Show inline warning if above the recommended 10 fmoles per entry clone
+            const fmolesWarningEl = document.getElementById('lr-fmoles-warning');
+            if (entryFmoles > 10) {
+                const totalFmoles = (entryFmoles * 3) + 20;
+                fmolesWarningEl.textContent = '⚠️ Note: Recommended amount is 10 fmoles per Entry clone. Total reaction is ' + totalFmoles.toFixed(0) + ' fmoles (some protocols use 20 fmoles per Entry clone).';
+                fmolesWarningEl.style.display = 'block';
+            } else {
+                fmolesWarningEl.style.display = 'none';
             }
 
             const entry1Ng = fmolesToNg(entryFmoles, entry1Size);
@@ -1635,24 +1808,44 @@
             const entry3Ng = fmolesToNg(entryFmoles, entry3Size);
 
             const destFmoles = 20;
-            const destSize = 4555;
             const destNg = fmolesToNg(destFmoles, destSize);
-            const destVolume = (destNg / 150).toFixed(2);
 
-            const totalFmoles = (entryFmoles * 3) + destFmoles;
-            if (totalFmoles > 60) {
-                alert('Warning: Total DNA (' + totalFmoles.toFixed(2) + ' fmoles) exceeds 60 fmoles limit.\nPlease reduce the amount per entry clone.');
-                return;
-            }
+            // Store calculated values for the scale toggle
+            const resultsEl = document.getElementById('lr-results');
+            resultsEl.dataset.entry1Ng = entry1Ng.toFixed(2);
+            resultsEl.dataset.entry2Ng = entry2Ng.toFixed(2);
+            resultsEl.dataset.entry3Ng = entry3Ng.toFixed(2);
+            resultsEl.dataset.destNg   = destNg.toFixed(2);
 
-            document.getElementById('lr-entry1-volume').textContent = entry1Ng.toFixed(2) + ' ng';
-            document.getElementById('lr-entry2-volume').textContent = entry2Ng.toFixed(2) + ' ng';
-            document.getElementById('lr-entry3-volume').textContent = entry3Ng.toFixed(2) + ' ng';
-            document.getElementById('lr-dest-volume').textContent = destVolume + ' ul (' + destNg.toFixed(2) + ' ng)';
-            document.getElementById('lr-te-volume').textContent = 'to 8 ul (total 1-7 ul entries + dest)';
-            document.getElementById('lr-results').style.display = 'block';
+            // Reset scale toggle and render full 10 µl layout
+            document.getElementById('lr-half-scale').checked = false;
+            renderLRResults(false);
 
-            document.getElementById('lr-results').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            resultsEl.style.display = 'block';
+            resultsEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function updateLRScale() {
+            const halfScale = document.getElementById('lr-half-scale').checked;
+            renderLRResults(halfScale);
+        }
+
+        function renderLRResults(halfScale) {
+            const resultsEl = document.getElementById('lr-results');
+            const entry1Ng = parseFloat(resultsEl.dataset.entry1Ng);
+            const entry2Ng = parseFloat(resultsEl.dataset.entry2Ng);
+            const entry3Ng = parseFloat(resultsEl.dataset.entry3Ng);
+            const destNg   = parseFloat(resultsEl.dataset.destNg);
+
+            document.getElementById('lr-results-title').textContent =
+                halfScale ? 'LR Reaction Components (5 µl total)' : 'LR Reaction Components (10 µl total)';
+
+            document.getElementById('lr-entry1-volume').textContent  = entry1Ng.toFixed(2) + ' ng';
+            document.getElementById('lr-entry2-volume').textContent  = entry2Ng.toFixed(2) + ' ng';
+            document.getElementById('lr-entry3-volume').textContent  = entry3Ng.toFixed(2) + ' ng';
+            document.getElementById('lr-dest-volume').textContent    = destNg.toFixed(2) + ' ng';
+            document.getElementById('lr-te-volume').textContent      = halfScale ? 'to 4 µl' : 'to 8 µl';
+            document.getElementById('lr-enzyme-volume').textContent  = halfScale ? '1 µl' : '2 µl';
         }
 
         // ========== MULTISITE GATEWAY TOOL FUNCTIONS ==========
@@ -1726,6 +1919,10 @@
             '3': []
         };
         let destFeatures = [];
+
+        // pDONR backbone data for Entry vector GenBank generation
+        let pDONRBackbones = { 'p4p1r': null, '221': null, 'p2rp3': null };
+        let generatedEntryVectors = {};
 
         // Parse pDEST vector to extract backbone
         function parseDestVector(fileContent) {
@@ -2122,6 +2319,7 @@
                         const result = parseEntryClone(e.target.result, '5');
                         document.getElementById('seq5').value = result.insertSequence;
                         sequenceSources['5'] = 'entry';
+                        updateEntryGenVisibility('5', false);
                         document.getElementById('info5').innerHTML =
                             `Length: ${result.insertSequence.length} bp <span class="source-badge entry">Entry Clone</span>`;
                         document.getElementById('error5').textContent = '';
@@ -2142,6 +2340,7 @@
                         const result = parseEntryClone(e.target.result, 'middle');
                         document.getElementById('seqMiddle').value = result.insertSequence;
                         sequenceSources['middle'] = 'entry';
+                        updateEntryGenVisibility('middle', false);
                         document.getElementById('infoMiddle').innerHTML =
                             `Length: ${result.insertSequence.length} bp <span class="source-badge entry">Entry Clone</span>`;
                         document.getElementById('errorMiddle').textContent = '';
@@ -2162,6 +2361,7 @@
                         const result = parseEntryClone(e.target.result, '3');
                         document.getElementById('seq3').value = result.insertSequence;
                         sequenceSources['3'] = 'entry';
+                        updateEntryGenVisibility('3', false);
                         document.getElementById('info3').innerHTML =
                             `Length: ${result.insertSequence.length} bp <span class="source-badge entry">Entry Clone</span>`;
                         document.getElementById('error3').textContent = '';
@@ -2584,6 +2784,7 @@
             displayPrimers();
             displayStats();
             drawVectorMap();
+            generateAndDisplayEntryVectors();
         }
 
         function generatePrimers(seq5, seqMiddle, seq3, frame5nt, frame3nt, useFrame5, useFrame3, frame5Placement, frame3Placement) {
@@ -3218,6 +3419,236 @@
             URL.revokeObjectURL(url);
         }
 
+        // ========== ENTRY VECTOR GENERATION FUNCTIONS ==========
+
+        function toggleEntryName(element) {
+            const fieldId = element === '5' ? 'entryName5Field' :
+                            element === 'middle' ? 'entryNameMiddleField' : 'entryName3Field';
+            const checkId = element === '5' ? 'genEntry5' :
+                            element === 'middle' ? 'genEntryMiddle' : 'genEntry3';
+            document.getElementById(fieldId).style.display =
+                document.getElementById(checkId).checked ? 'block' : 'none';
+        }
+
+        function updateEntryGenVisibility(element, isRaw) {
+            const sectionId = element === '5' ? 'entryGen5Section' :
+                              element === 'middle' ? 'entryGenMiddleSection' : 'entryGen3Section';
+            const section = document.getElementById(sectionId);
+            if (!section) return;
+            section.style.display = isRaw ? 'block' : 'none';
+            if (!isRaw) {
+                const checkId = element === '5' ? 'genEntry5' :
+                                element === 'middle' ? 'genEntryMiddle' : 'genEntry3';
+                const fieldId = element === '5' ? 'entryName5Field' :
+                                element === 'middle' ? 'entryNameMiddleField' : 'entryName3Field';
+                document.getElementById(checkId).checked = false;
+                document.getElementById(fieldId).style.display = 'none';
+            }
+        }
+
+        function parseEntryCloneTemplate(fileContent, vectorType) {
+            // Template-based approach: load a real entry clone and swap in the user's insert.
+            // This gives exact att site sequences and backbone annotations with no BP-reaction
+            // simulation needed — we simply find the left/right att sites, take everything
+            // before/after them as backbone5/backbone3, then concatenate with the new insert.
+            const attConfig = {
+                'p4p1r': {
+                    leftLabel: 'attL4', rightLabel: 'attR1',
+                    entryType: "5' Entry", donorName: 'pDONR P4-P1R'
+                },
+                '221': {
+                    leftLabel: 'attL1', rightLabel: 'attL2',
+                    entryType: 'Middle Entry', donorName: 'pDONR 221'
+                },
+                'p2rp3': {
+                    leftLabel: 'attR2', rightLabel: 'attL3',
+                    entryType: "3' Entry", donorName: 'pDONR P2R-P3'
+                }
+            };
+
+            const config = attConfig[vectorType];
+            if (!config) throw new Error('Unknown vector type: ' + vectorType);
+
+            const originMatch = fileContent.match(/ORIGIN\s+([\s\S]+?)\/\//);
+            if (!originMatch) throw new Error('No sequence found in template entry clone');
+
+            const fullSequence = originMatch[1].replace(/\d+/g, '').replace(/\s+/g, '').toUpperCase();
+            const allFeatures = parseGenbankFeatures(fileContent);
+
+            let leftAtt = null, rightAtt = null;
+            for (const f of allFeatures) {
+                const lbl = (f.qualifiers.label || '').trim();
+                if (lbl === config.leftLabel) {
+                    if (!leftAtt || f.start < leftAtt.start) leftAtt = f;
+                }
+                if (lbl === config.rightLabel) {
+                    if (!rightAtt || f.start > rightAtt.start) rightAtt = f;
+                }
+            }
+
+            if (!leftAtt || !rightAtt) {
+                throw new Error(`Could not find ${config.leftLabel}/${config.rightLabel} in template`);
+            }
+
+            // backbone5 = everything up to and including the left att site (exact sequence from real clone)
+            // backbone3 = from start of right att site to end (exact sequence from real clone)
+            const backbone5 = fullSequence.substring(0, leftAtt.end);
+            const backbone3 = fullSequence.substring(rightAtt.start - 1);
+
+            // backbone5Features: all features ending within backbone5 (att site included)
+            const backbone5Features = allFeatures
+                .filter(f => f.end <= leftAtt.end && f.type !== 'source')
+                .map(f => ({ ...f, qualifiers: { ...f.qualifiers, label: (f.qualifiers.label || f.type).trim() } }));
+
+            // backbone3Features: all features starting at rightAtt or after, shifted to backbone3 coords
+            const offset = rightAtt.start - 1;
+            const backbone3Features = allFeatures
+                .filter(f => f.start >= rightAtt.start && f.type !== 'source')
+                .map(f => ({
+                    ...f,
+                    start: f.start - offset,
+                    end:   f.end   - offset,
+                    qualifiers: { ...f.qualifiers, label: (f.qualifiers.label || f.type).trim() }
+                }));
+
+            return {
+                fullSequence, backbone5, backbone3,
+                backbone5Features, backbone3Features,
+                leftEntryLabel:  config.leftLabel,
+                rightEntryLabel: config.rightLabel,
+                entryType: config.entryType,
+                donorName: config.donorName
+            };
+        }
+
+        async function loadPDONRBackbones() {
+            // Use real entry clones as templates so att site sequences are exact.
+            // The user's raw insert is spliced in between the att sites of the template.
+            const templateFiles = {
+                'p4p1r': 'JDW_404_p5E-UASE1b.gb',
+                '221':   'JDW_455_pME-MCS (WPD).gb',
+                'p2rp3': 'JDW_967_p3E-H2A_mCherry_SV40pA.gb'
+            };
+
+            await Promise.all(Object.entries(templateFiles).map(async ([type, file]) => {
+                try {
+                    const response = await fetch('Gateway_vectors/' + encodeURIComponent(file));
+                    if (!response.ok) throw new Error('HTTP ' + response.status);
+                    const gbText = await response.text();
+                    pDONRBackbones[type] = parseEntryCloneTemplate(gbText, type);
+                } catch (error) {
+                    console.log(`Could not load entry clone template for ${type}:`, error.message);
+                }
+            }));
+        }
+
+        function generateEntryCloneGenBank(elementType, insertSeq, insertName, pDONRData) {
+            const totalSeq = pDONRData.backbone5 + insertSeq + pDONRData.backbone3;
+            const b5Len = pDONRData.backbone5.length;
+            const insertLen = insertSeq.length;
+            const totalLen = totalSeq.length;
+
+            const now = new Date();
+            const months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+            const dateStr = `${now.getDate()}-${months[now.getMonth()]}-${now.getFullYear()}`;
+            const locusName = (insertName.replace(/[^a-zA-Z0-9_]/g, '_') + '_entry').substring(0, 20);
+
+            let gb = '';
+            gb += `LOCUS       ${locusName.padEnd(20)} ${totalLen} bp    DNA     circular SYN ${dateStr}\n`;
+            gb += `DEFINITION  ${insertName} Entry clone (${pDONRData.leftEntryLabel}-${insertName}-${pDONRData.rightEntryLabel})\n`;
+            gb += `ACCESSION   .\n`;
+            gb += `KEYWORDS    .\n`;
+            gb += `SOURCE      synthetic construct\n`;
+            gb += `  ORGANISM  synthetic construct\n`;
+            gb += `FEATURES             Location/Qualifiers\n`;
+
+            function writeFeature(f, startPos, endPos) {
+                const loc = f.complement ? `complement(${startPos}..${endPos})` : `${startPos}..${endPos}`;
+                gb += `     ${f.type.padEnd(16)} ${loc}\n`;
+                gb += `                     /label="${f.qualifiers.label || f.type}"\n`;
+                if (f.qualifiers.note) {
+                    const note = (f.qualifiers.note).replace(/\n/g, ' ').replace(/"/g, "'").substring(0, 200);
+                    gb += `                     /note="${note}"\n`;
+                }
+            }
+
+            pDONRData.backbone5Features.forEach(f => writeFeature(f, f.start, f.end));
+
+            if (insertLen > 0) {
+                gb += `     misc_feature    ${b5Len + 1}..${b5Len + insertLen}\n`;
+                gb += `                     /label="${insertName}"\n`;
+                gb += `                     /note="${pDONRData.entryType} element insert"\n`;
+            }
+
+            pDONRData.backbone3Features.forEach(f => {
+                writeFeature(f, b5Len + insertLen + f.start, b5Len + insertLen + f.end);
+            });
+
+            gb += `ORIGIN\n`;
+            for (let i = 0; i < totalSeq.length; i += 60) {
+                const lineNum = (i + 1).toString().padStart(9, ' ');
+                const chunk = totalSeq.substring(i, i + 60).toLowerCase();
+                const formatted = chunk.match(/.{1,10}/g).join(' ');
+                gb += `${lineNum} ${formatted}\n`;
+            }
+            gb += `//\n`;
+            return gb;
+        }
+
+        function generateAndDisplayEntryVectors() {
+            generatedEntryVectors = {};
+
+            const elements = [
+                { key: '5',      checkId: 'genEntry5',      nameId: 'entryName5',      pDONRType: 'p4p1r', label: "5' Entry (p5E)" },
+                { key: 'middle', checkId: 'genEntryMiddle', nameId: 'entryNameMiddle', pDONRType: '221',   label: 'Middle Entry (pME)' },
+                { key: '3',      checkId: 'genEntry3',      nameId: 'entryName3',      pDONRType: 'p2rp3', label: "3' Entry (p3E)" }
+            ];
+
+            const downloadSection = document.getElementById('entryVectorDownloads');
+            const downloadButtons = document.getElementById('entryVectorDownloadButtons');
+            downloadButtons.innerHTML = '';
+            let anyGenerated = false;
+
+            elements.forEach(el => {
+                if (!document.getElementById(el.checkId).checked) return;
+                if (sequenceSources[el.key] !== 'raw') return;
+
+                anyGenerated = true;
+                const pDONRData = pDONRBackbones[el.pDONRType];
+                if (!pDONRData) {
+                    const p = document.createElement('p');
+                    p.style.cssText = 'color:#d32f2f; font-size:0.85em; margin:4px 0;';
+                    p.textContent = `${el.label}: pDONR backbone unavailable (vectors must be served, not opened via file://)`;
+                    downloadButtons.appendChild(p);
+                    return;
+                }
+
+                const seqId = el.key === '5' ? 'seq5' : el.key === 'middle' ? 'seqMiddle' : 'seq3';
+                const insertSeq = cleanSequence(document.getElementById(seqId).value);
+                const rawName = document.getElementById(el.nameId).value.trim();
+                const insertName = rawName || (el.key === '5' ? '5prime_insert' : el.key === 'middle' ? 'middle_insert' : '3prime_insert');
+
+                try {
+                    const gbContent = generateEntryCloneGenBank(el.key, insertSeq, insertName, pDONRData);
+                    const filename = insertName.replace(/[^a-zA-Z0-9_-]/g, '_') + '_entry_clone.gb';
+                    generatedEntryVectors[el.key] = { content: gbContent, filename, insertName, label: el.label };
+
+                    const btn = document.createElement('button');
+                    btn.className = 'entry-dl-btn';
+                    btn.textContent = `Download ${el.label} GenBank (${insertName})`;
+                    btn.onclick = () => downloadFile(filename, gbContent);
+                    downloadButtons.appendChild(btn);
+                } catch (error) {
+                    const p = document.createElement('p');
+                    p.style.cssText = 'color:#d32f2f; font-size:0.85em; margin:4px 0;';
+                    p.textContent = `${el.label}: ${error.message}`;
+                    downloadButtons.appendChild(p);
+                }
+            });
+
+            downloadSection.style.display = anyGenerated ? 'block' : 'none';
+        }
+
         // ========== VECTOR VIEWER FUNCTIONS ==========
         let currentViewerVector = null;
         let viewerFeatures = [];
@@ -3248,6 +3679,7 @@
                 vectorList = data.vectors;
                 populateVectorDropdown();
                 populateGatewayDropdowns();
+                loadPDONRBackbones();
             } catch (error) {
                 console.log('Vector list not available:', error.message);
                 document.getElementById('vectorLoadStatus').innerHTML =
@@ -3339,6 +3771,7 @@
                     const seqId = slot === '5' ? 'seq5' : (slot === 'middle' ? 'seqMiddle' : 'seq3');
                     document.getElementById(seqId).value = result.insertSequence;
                     sequenceSources[elementKey] = 'entry';
+                    updateEntryGenVisibility(elementKey, false);
                     document.getElementById(infoId).innerHTML =
                         `Length: ${result.insertSequence.length} bp <span class="source-badge entry">Entry Clone</span>`;
                 }
