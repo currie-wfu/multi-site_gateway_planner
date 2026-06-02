@@ -31,10 +31,40 @@
       "description": "Destination vector with flanking SceI Meganuclease / Tol2 transposon arms"
     },
     {
+      "file": "currie-lab-crycherry_sceitol2-pdest.gb",
+      "name": "Currie Lab CryCherry pDEST-SceI/Tol2",
+      "type": "Destination",
+      "description": "Destination vector with Crystallin-Cherry cassette and flanking SceI Meganuclease / Tol2 transposon arms"
+    },
+    {
+      "file": "155_p5e-krt19_prom.gb",
+      "name": “p5E-krt19prom",
+      "type": "5' Entry",
+      "description": "5' Entry clone with zebrafish Keratin 19 3.9kb promoter"
+    },
+    {
       "file": "p5e_prrx1enh_bglobin.gb",
       "name": "p5E-mPrrx1enh-bglobin",
       "type": "5' Entry",
       "description": "5' Entry clone with mouse Prrx1 enhancer/promoter with balobin intron"
+    },
+    {
+      "file": "219_p5e-krt4_prom.gb",
+      "name": “p5E-krt4prom",
+      "type": "5' Entry",
+      "description": "5' Entry clone with zebrafish Keratin 4 2.2kb promoter"
+    },
+    {
+      "file": "p5e_mpeg1.gb",
+      "name": “p5E-mpeg1prom",
+      "type": "5' Entry",
+      "description": "5' Entry clone with zebrafish Mpeg1 promoter"
+    },
+     {
+      "file": "p5e_lyzc.gb",
+      "name": “p5E-LyzCprom",
+      "type": "5' Entry",
+      "description": "5' Entry clone with zebrafish LyzC promoter"
     },
     {
       "file": "JDW_404_p5E-UASE1b.gb",
@@ -83,6 +113,12 @@
       "name": "pME-Gal4VP16",
       "type": "Middle Entry",
       "description": "Middle Entry clone with Gal4-VP16 transactivator"
+    },
+    {
+      "file": "pme_memrubyt2a_3.gb",
+      "name": “pME-memRuby3-T2A",
+      "type": "Middle Entry",
+      "description": "Middle Entry clone with membrane-associated Ruby3 and T2A"
     },
     {
       "file": "387.Gal4VP16.gb",
@@ -185,6 +221,12 @@
       "name": "p3E-WPRE-SV40pA",
       "type": "3' Entry",
       "description": "3' Entry clone with WPRE and SV40 polyA signal"
+    },
+    {
+      "file": "p3e-electra2_2xsv40pa.gb",
+      "name": “p3E-Electra2-2xSV40pA",
+      "type": "3' Entry",
+      "description": "3' Entry clone with cytosolic Electra2 and 2xSV40 polyA sequence (will stay in frame with T2A)"
     },
     {
       "file": "JDW_967_p3E-H2A_mCherry_SV40pA.gb",

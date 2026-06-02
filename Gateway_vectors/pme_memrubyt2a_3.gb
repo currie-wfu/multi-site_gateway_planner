@@ -1,0 +1,196 @@
+LOCUS       pME_memRubyT2A_3        3381 bp ds-DNA     circular     02-JUN-2026
+DEFINITION  pME_memRubyT2A_3.
+ACCESSION   pME_memRubyT2A_3
+VERSION     pME_memRubyT2A_3
+COMMENT     Imported using the Genbank importer.
+            File name: G5LK8X_1_pME_memRubyT2A_3.gbk
+            Annotated with pLannotate v1.2.2
+FEATURES             Location/Qualifiers
+     rep_origin      1..589
+                     /label="ori"
+                     /ApEinfo_revcolor="#ffef86"
+                     /ApEinfo_fwdcolor="#ffef86"
+                     /note="pLannotate"
+                     /database="snapgene"
+                     /identity="99.8"
+                     /match_length="99.0"
+                     /fragment="False"
+                     /other="rep_origin"
+                     /description="high-copy-number ColE1/pMB1/pBR322/pUC originof replication "
+     repeat_region   complement(749..760)
+                     /label="AAV2 ITR (fragment)"
+                     /ApEinfo_revcolor="#ff9ccd"
+                     /ApEinfo_fwdcolor="#ff9ccd"
+                     /note="pLannotate"
+                     /database="itrs"
+                     /identity="100.0"
+                     /match_length="8.0"
+                     /fragment="True"
+                     /other="repeat_region"
+                     /description="AAV2 ITR Flip"
+     CDS             772..864
+                     /label="lacI (fragment)"
+                     /ApEinfo_revcolor="#84b0dc"
+                     /ApEinfo_fwdcolor="#84b0dc"
+                     /note="pLannotate"
+                     /database="snapgene"
+                     /identity="100.0"
+                     /match_length="8.0"
+                     /fragment="True"
+                     /other="CDS"
+                     /description="lac repressor; lacI; The lac repressor bindsto the lac operator to inhibit transcription in E. coli.This inhibition can be relieved by adding lactose orisopropyl-β-D-thiogalactopyranoside (IPTG)."
+                     /translation="APNTQTASPRALADSLMQLARQVSRLESGQ*"
+     terminator      complement(919..946)
+                     /label="rrnB T2 terminator"
+                     /ApEinfo_revcolor="#f8d3a9"
+                     /ApEinfo_fwdcolor="#f8d3a9"
+                     /note="pLannotate"
+                     /database="snapgene"
+                     /identity="100.0"
+                     /match_length="100.0"
+                     /fragment="False"
+                     /other="terminator"
+                     /description="transcription terminator T2 from the E. colirrnB gene"
+     terminator      1078..1121
+                     /label="rrnB T1 terminator"
+                     /ApEinfo_revcolor="#d6b295"
+                     /ApEinfo_fwdcolor="#d6b295"
+                     /note="pLannotate"
+                     /database="snapgene"
+                     /identity="100.0"
+                     /match_length="100.0"
+                     /fragment="False"
+                     /other="terminator"
+                     /description="Escherichia coli rrnB; transcriptionterminator T1 from the E. coli rrnB gene"
+     CDS             complement(1168..1204)
+                     /label="lacZα (fragment)"
+                     /ApEinfo_revcolor="#84b0dc"
+                     /ApEinfo_fwdcolor="#84b0dc"
+                     /note="pLannotate"
+                     /database="snapgene"
+                     /identity="100.0"
+                     /match_length="21.0"
+                     /fragment="True"
+                     /other="CDS"
+                     /description="LacZα fragment of β-galactosidase; lacZfragment"
+                     /translation="TGRRFTTS*LGK"
+     protein_bind    1220..1319
+                     /label="attL1"
+                     /ApEinfo_revcolor="#b7e6d7"
+                     /ApEinfo_fwdcolor="#b7e6d7"
+                     /note="pLannotate"
+                     /database="snapgene"
+                     /identity="100.0"
+                     /match_length="100.0"
+                     /fragment="False"
+                     /other="protein_bind"
+                     /description="mutant version of attL; recombination sitefor the Gateway® LR reaction LR Clonase™"
+     misc_feature    1326..1382
+                     /label="Gap43-membrane"
+                     /ApEinfo_revcolor="#84b0dc"
+                     /ApEinfo_fwdcolor="#84b0dc"
+     CDS             1326..2156
+                     /ApEinfo_revcolor="#84b0dc"
+                     /ApEinfo_fwdcolor="#84b0dc"
+                     /translation="MLCCMRRTKQVEKNDEDQKIVSKGEELIKENMRMKVVMEGSVNGHQFKCTGEGEGRPYEGVQTMRIKVIEGGPLPFAFDILATSFMYGSRTFIKYPADIPDFFKQSFPEGFTWERVTRYEDGGVVTVTQDTSLEDGELVYNVKVRGVNFPSNGPVMQKKTKGWEPNTEMMYPADGGLRGYTDIALKVDGGGHLHCNFVTTYRSKKTVGNIKMPGVHAVDHRLERIEESDNETYVVQREVAVAKYSNLGGGMDELYKGSGEGRGSLLTCGDVEENPGP"
+     misc_feature    1383..2093
+                     /label="Ruby3"
+                     /ApEinfo_revcolor="#b7e6d7"
+                     /ApEinfo_fwdcolor="#b7e6d7"
+     misc_feature    2094..2156
+                     /label="T2A"
+                     /ApEinfo_revcolor="#d6b295"
+                     /ApEinfo_fwdcolor="#d6b295"
+     protein_bind    complement(2157..2256)
+                     /label="attL2"
+                     /ApEinfo_revcolor="#d59687"
+                     /ApEinfo_fwdcolor="#d59687"
+                     /note="pLannotate"
+                     /database="snapgene"
+                     /identity="100.0"
+                     /match_length="100.0"
+                     /fragment="False"
+                     /other="protein_bind"
+                     /description="mutant version of attL; recombination sitefor the Gateway® LR reaction LR Clonase™"
+     promoter        complement(2274..2292)
+                     /label="T7 promoter"
+                     /ApEinfo_revcolor="#d6b295"
+                     /ApEinfo_fwdcolor="#d6b295"
+                     /note="pLannotate"
+                     /database="snapgene"
+                     /identity="100.0"
+                     /match_length="100.0"
+                     /fragment="False"
+                     /other="promoter"
+                     /description="promoter for bacteriophage T7 RNA polymerase"
+     CDS             2426..3235
+                     /label="KanR"
+                     /ApEinfo_revcolor="#84b0dc"
+                     /ApEinfo_fwdcolor="#84b0dc"
+                     /note="pLannotate"
+                     /database="snapgene"
+                     /identity="100.0"
+                     /match_length="100.0"
+                     /fragment="False"
+                     /other="CDS"
+                     /description="aminoglycoside phosphotransferase;aph(3')-Ia; confers resistance to kanamycin in bacteria orG418 (Geneticin®) in eukaryotes"
+                     /translation="MSHIQRETSRPRLNSNMDADLYGYKWARDNVGQSGATIYRLYGKPDAPELFLKHGKGSVANDVTDEMVRLNWLTEFMPLPTIKHFIRTPDDAWLLTTAIPGKTAFQVLEEYPDSGENIVDALAVFLRRLHSIPVCNCPFNSDRVFRLAQAQSRMNNGLVDASDFDDERNGWPVEQVWKEMHKLLPFSPDSVVTHGDFSLDNLIFDEGKLIGCIDVGRVGIADRYQDLAILWNCLGEFSPSLQKRLFQKYGIDNPDMNKLQFHLMLDEFF*"
+ORIGIN
+        1 ttgagatcct ttttttctgc gcgtaatctg ctgcttgcaa acaaaaaaac caccgctacc
+       61 agcggtggtt tgtttgccgg atcaagagct accaactctt tttccgaagg taactggctt
+      121 cagcagagcg cagataccaa atactgttct tctagtgtag ccgtagttag gccaccactt
+      181 caagaactct gtagcaccgc ctacatacct cgctctgcta atcctgttac cagtggctgc
+      241 tgccagtggc gataagtcgt gtcttaccgg gttggactca agacgatagt taccggataa
+      301 ggcgcagcgg tcgggctgaa cggggggttc gtgcacacag cccagcttgg agcgaacgac
+      361 ctacaccgaa ctgagatacc tacagcgtga gctatgagaa agcgccacgc ttcccgaagg
+      421 gagaaaggcg gacaggtatc cggtaagcgg cagggtcgga acaggagagc gcacgaggga
+      481 gcttccaggg ggaaacgcct ggtatcttta tagtcctgtc gggtttcgcc acctctgact
+      541 tgagcgtcga tttttgtgat gctcgtcagg ggggcggagc ctatggaaaa acgccagcaa
+      601 cgcggccttt ttacggttcc tggccttttg ctggcctttt gctcacatgt tctttcctgc
+      661 gttatcccct gattctgtgg ataaccgtat taccgccttt gagtgagctg ataccgctcg
+      721 ccgcagccga acgaccgagc gcagcgagtc agtgagcgag gaagcggaag agcgcccaat
+      781 acgcaaaccg cctctccccg cgcgttggcc gattcattaa tgcagctggc acgacaggtt
+      841 tcccgactgg aaagcgggca gtgagcgcaa cgcaattaat acgcgtaccg ctagccagga
+      901 agagtttgta gaaacgcaaa aaggccatcc gtcaggatgg ccttctgctt agtttgatgc
+      961 ctggcagttt atggcgggcg tcctgcccgc caccctccgg gccgttgctt cacaacgttc
+     1021 aaatccgctc ccggcggatt tgtcctactc aggagagcgt tcaccgacaa acaacagata
+     1081 aaacgaaagg cccagtcttc cgactgagcc tttcgtttta tttgatgcct ggcagttccc
+     1141 tactctcgcg ttaacgctag catggatgtt ttcccagtca cgacgttgta aaacgacggc
+     1201 cagtcttaag ctcgggcccc aaataatgat tttattttga ctgatagtga cctgttcgtt
+     1261 gcaacaaatt gatgagcaat gcttttttat aatgccaact ttgtacaaaa aagcaggctg
+     1321 gcaccatgct gtgctgtatg agaagaacca aacaggttga aaagaatgat gaggaccaaa
+     1381 agatcgtgtc taagggcgaa gagctgatca aggaaaatat gcgtatgaag gtggtcatgg
+     1441 aaggttcggt caacggccac caattcaaat gcacaggtga aggagaaggc agaccgtacg
+     1501 agggagtgca aaccatgagg atcaaagtca tcgagggagg acccctgcca tttgcctttg
+     1561 acattcttgc cacgtcgttc atgtatggca gccgtacctt tatcaagtac ccggccgaca
+     1621 tccctgattt ctttaaacag tcctttcctg agggttttac ttgggaaaga gttacgagat
+     1681 acgaagatgg tggagtcgtc accgtcacgc aggacaccag ccttgaggat ggcgagctcg
+     1741 tctacaacgt caaggtcaga ggggtaaact ttccctccaa tggtcccgtg atgcagaaga
+     1801 agaccaaggg ttgggagcct aatacagaga tgatgtatcc agcagatggt ggtctgagag
+     1861 gatacactga catcgcactg aaagttgatg gtggtggcca tctgcactgc aacttcgtga
+     1921 caacttacag gtcaaaaaag accgtcggga acatcaagat gcccggtgtc catgccgttg
+     1981 atcaccgcct ggaaaggatc gaggagagtg acaatgaaac ctacgtagtg caaagagaag
+     2041 tggcagttgc caaatacagc aaccttggtg gtggcatgga cgagctgtac aagggctccg
+     2101 gcgagggcag aggaagtctt ctaacatgcg gtgacgtgga ggagaatccc ggcccaaccc
+     2161 agctttcttg tacaaagttg gcattataag aaagcattgc ttatcaattt gttgcaacga
+     2221 acaggtcact atcagtcaaa ataaaatcat tatttgccat ccagctgata tcccctatag
+     2281 tgagtcgtat tacatggtca tagctgtttc ctggcagctc tggcccgtgt ctcaaaatct
+     2341 ctgatgttac attgcacaag ataaaaatat atcatcatga acaataaaac tgtctgctta
+     2401 cataaacagt aatacaaggg gtgttatgag ccatattcaa cgggaaacgt cgaggccgcg
+     2461 attaaattcc aacatggatg ctgatttata tgggtataaa tgggctcgcg ataatgtcgg
+     2521 gcaatcaggt gcgacaatct atcgcttgta tgggaagccc gatgcgccag agttgtttct
+     2581 gaaacatggc aaaggtagcg ttgccaatga tgttacagat gagatggtca gactaaactg
+     2641 gctgacggaa tttatgcctc ttccgaccat caagcatttt atccgtactc ctgatgatgc
+     2701 atggttactc accactgcga tccccggaaa aacagcattc caggtattag aagaatatcc
+     2761 tgattcaggt gaaaatattg ttgatgcgct ggcagtgttc ctgcgccggt tgcattcgat
+     2821 tcctgtttgt aattgtcctt ttaacagcga tcgcgtattt cgtctcgctc aggcgcaatc
+     2881 acgaatgaat aacggtttgg ttgatgcgag tgattttgat gacgagcgta atggctggcc
+     2941 tgttgaacaa gtctggaaag aaatgcataa acttttgcca ttctcaccgg attcagtcgt
+     3001 cactcatggt gatttctcac ttgataacct tatttttgac gaggggaaat taataggttg
+     3061 tattgatgtt ggacgagtcg gaatcgcaga ccgataccag gatcttgcca tcctatggaa
+     3121 ctgcctcggt gagttttctc cttcattaca gaaacggctt tttcaaaaat atggtattga
+     3181 taatcctgat atgaataaat tgcagtttca tttgatgctc gatgagtttt tctaatcaga
+     3241 attggttaat tggttgtaac actggcagag cattacgctg acttgacggg acggcgcaag
+     3301 ctcatgacca aaatccctta acgtgagtta cgcgtcgttc cactgagcgt cagaccccgt
+     3361 agaaaagatc aaaggatctt c
+//
