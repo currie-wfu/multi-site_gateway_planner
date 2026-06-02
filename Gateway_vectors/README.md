@@ -100,6 +100,7 @@ The replacement file must:
 **Vector doesn't appear in the dropdown**
 - Check that the `type` string in `vectors.json` matches exactly (including capitalization and the apostrophe in `5' Entry` / `3' Entry`).
 - Confirm the JSON is valid — a missing comma or extra bracket will prevent all vectors from loading. Paste the file into [jsonlint.com](https://jsonlint.com) to check.
+- **Watch out for smart/curly quotes.** If you edited `vectors.json` in a word processor or any app with auto-correct, it may have replaced straight double quotes (`"`) with curly ones (`"` / `"`). These are invisible to the eye but break JSON parsing entirely and will prevent all vectors from loading. Always edit `vectors.json` in a plain-text editor (VS Code, BBEdit, TextEdit in plain-text mode) — never in Word, Pages, or Notes.
 
 **"Could not load vector" error when selecting a vector**
 - The `"file"` value in `vectors.json` doesn't match the actual filename. Check for typos, extra spaces, or capitalization differences.
